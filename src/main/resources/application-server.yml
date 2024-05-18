@@ -1,0 +1,15 @@
+server:
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      timeout: 30m
+      cookie:
+        http-only: true
+        secure: true
+  port: 8085
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 512MB
+      max-request-size: 512MB

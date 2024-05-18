@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: spring-boot-template-pool
+      minimum-idle: 5
+      idle-timeout: 30000
+      maximum-pool-size: 50
+      max-lifetime: 1800000
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}

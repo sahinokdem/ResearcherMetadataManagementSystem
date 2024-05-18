@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+
+    <!-- Define the conversion rules -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="highlight" converterClass="ch.qos.logback.classic.pattern.color.HighlightingCompositeConverter"/>
+
+    <!-- Define the console appender -->
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>"DEBUG"</level>
+        </filter>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%clr(%d{HH:mm:ss.SSS}){yellow} %clr(%-5level) %clr(%logger{36}){cyan} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Define the async appender that wraps the file appender and console appender -->
+    <appender name="asyncAppender" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="consoleAppender"/>
+    </appender>
+
+    <!-- Set the root logger level and attach the async appender -->
+    <root level="INFO">
+        <appender-ref ref="consoleAppender"/>
+    </root>
+</configuration>

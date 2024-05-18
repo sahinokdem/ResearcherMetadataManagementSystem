@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: spring-boot-template-pool
+      minimum-idle: 5
+      idle-timeout: 30000
+      maximum-pool-size: 50
+      max-lifetime: 1800000
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:postgresql:9.6.8:///db
+    username: sa
+    password: sa

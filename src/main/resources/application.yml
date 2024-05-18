@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    include: >
+      db,
+      docs,
+      jpa,
+      jwt,
+      logging,
+      server,
+      swagger
