@@ -1,6 +1,7 @@
 package com.alpergayretoglu.spring_boot_template.service;
 
 
+import com.alpergayretoglu.spring_boot_template.enums.UserRole;
 import com.alpergayretoglu.spring_boot_template.model.request.LoginRequest;
 import com.alpergayretoglu.spring_boot_template.model.response.LoginResponse;
 import com.alpergayretoglu.spring_boot_template.model.request.RegisterRequest;
@@ -33,7 +34,8 @@ public class AuthenticationService {
 
         User user = new User(
                 registerRequest.getEmail(),
-                passwordEncoder.encode(registerRequest.getPassword())
+                passwordEncoder.encode(registerRequest.getPassword()),
+                UserRole.JOP_APPLICANT
         );
 
         User userEntity = userRepository.save(user);

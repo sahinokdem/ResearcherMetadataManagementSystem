@@ -1,6 +1,7 @@
 package com.alpergayretoglu.spring_boot_template.entity;
 
 import com.alpergayretoglu.spring_boot_template.entity.BaseEntity;
+import com.alpergayretoglu.spring_boot_template.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ import javax.persistence.Table;
 public class User extends BaseEntity {
     private String email;
     private String passwordEncoded;
+    private UserRole userRole;
 }

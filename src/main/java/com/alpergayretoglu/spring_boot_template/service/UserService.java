@@ -23,7 +23,8 @@ public class UserService {
 
         return new UserResponse(
                 user.getId(),
-                user.getEmail()
+                user.getEmail(),
+                user.getUserRole()
         );
     }
 
@@ -36,7 +37,8 @@ public class UserService {
 
         return new UserResponse(
                 currentUser.getId(),
-                currentUser.getEmail()
+                currentUser.getEmail(),
+                currentUser.getUserRole()
         );
     }
 }
