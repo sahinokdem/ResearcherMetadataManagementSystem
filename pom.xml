@@ -8,11 +8,11 @@
         <version>2.3.5.RELEASE</version>
         <relativePath/>
     </parent>
-    <groupId>com.alpergayretoglu</groupId>
-    <artifactId>spring-boot-template</artifactId>
+    <groupId>com.sahinokdem</groupId>
+    <artifactId>researcher-metadata</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spring-boot-template</name>
-    <description>SPRING BOOT TEMPLATE</description>
+    <description>RESEARCHER METADATA MANAGEMENT</description>
 
     <properties>
         <java.version>1.8</java.version>
