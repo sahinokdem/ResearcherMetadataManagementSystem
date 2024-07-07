@@ -1,6 +1,5 @@
 package com.sahinokdem.researcher_metadata.controller;
 
-
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
 import com.sahinokdem.researcher_metadata.service.UserService;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -32,5 +30,4 @@ public class UserController {
     public UserResponse getCurrentUser() {
         return userService.getCurrentUser();
     }
-
 }

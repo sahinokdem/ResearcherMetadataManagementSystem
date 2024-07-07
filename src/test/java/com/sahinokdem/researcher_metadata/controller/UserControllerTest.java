@@ -2,6 +2,8 @@ package com.sahinokdem.researcher_metadata.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sahinokdem.researcher_metadata.TokenService;
+import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.model.request.LoginRequest;
 import com.sahinokdem.researcher_metadata.model.response.LoginResponse;
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
@@ -16,35 +18,40 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AdminUserControllerTest {
+public class UserControllerTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
-    private String adminToken;
+    @Autowired
+    private TokenService tokenService;
+    @Autowired
+    private UserRepository userRepository;
 
-    @BeforeAll
-    public void setup() {
-        LoginRequest loginRequest = new LoginRequest("admin@test.com", "123456");
-        ResponseEntity<LoginResponse> loginResponse = restTemplate.postForEntity(
-                "/auth/login", loginRequest, LoginResponse.class);
-        adminToken = Objects.requireNonNull(loginResponse.getBody()).getToken();
+    private String getAdminToken() {
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        return tokenService.getTokenFor(user);
     }
 
     @Test
     public void given_AdminUser_when_GetAllUsers_then_StatusCodeIs200_and_AllUsersReturned() {
+        //GIVEN
+        String adminToken = getAdminToken();
+        //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
-
         HttpEntity<Void> request = new HttpEntity<>(headers);
         ResponseEntity<List<UserResponse>> response = restTemplate.exchange(
                 "/user", HttpMethod.GET, request, new ParameterizedTypeReference<List<UserResponse>>() {}
         );
-
+        //THEN
         assertEquals(HttpStatus.OK, response.getStatusCode());
         List<UserResponse> users = response.getBody();
         assertAll(
@@ -57,21 +64,21 @@ public class AdminUserControllerTest {
 
     @Test
     public void given_AdminUser_when_GetSpecificUser_then_StatusCodeIs200_and_UserReturned() {
+        //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-
+        String adminToken = getAdminToken();
+        //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
-
         HttpEntity<JsonNode> request = new HttpEntity<>(headers);
         ResponseEntity<UserResponse> response = restTemplate.exchange(
                 "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
-
+        //THEN
         assertAll(
-                "Admin user should be able to get specific user details", // Optional description
+                "Admin user should be able to get specific user details",
                 () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 200 OK"),
                 () -> assertNotNull(response.getBody(), "User response should not be null"),
                 () -> assertEquals(userId, response.getBody().getId(), "Retrieved user ID should match the requested ID")
         );
     }
-
 }
