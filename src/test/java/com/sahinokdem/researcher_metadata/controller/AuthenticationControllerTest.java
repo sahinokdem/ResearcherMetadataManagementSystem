@@ -15,9 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,10 +25,8 @@ public class AuthenticationControllerTest {
 
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private TestRestTemplate restTemplate;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     //LOGIN TESTS

@@ -7,6 +7,9 @@ import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class UserService {
@@ -40,5 +43,19 @@ public class UserService {
                 currentUser.getEmail(),
                 currentUser.getUserRole()
         );
+    }
+
+    public List<UserResponse> getUsers() {
+        List<User> users = userRepository.findAll();
+        List<UserResponse> userResponses = new ArrayList<>();
+        for (User user : users) {
+            userResponses.add(
+                    new UserResponse(
+                            user.getId(),
+                            user.getEmail(),
+                            user.getUserRole()
+                            ));
+        }
+        return userResponses;
     }
 }
