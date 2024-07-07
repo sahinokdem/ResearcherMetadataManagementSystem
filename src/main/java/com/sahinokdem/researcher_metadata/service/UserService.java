@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserResponse getUser(String userId) {
-        if (!isCurrentUserAdmin()) throw BusinessExceptions.AUTHORIZATION_MISSING;
+        assertCurrentUserRole(UserRole.ADMIN);
         User user = userRepository
                 .findById(userId)
                 .orElseThrow(
@@ -45,7 +45,7 @@ public class UserService {
     }
 
     public List<UserResponse> getUsers() {
-        if (!isCurrentUserAdmin()) throw BusinessExceptions.AUTHORIZATION_MISSING;
+        assertCurrentUserRole(UserRole.ADMIN);
         List<User> users = userRepository.findAll();
         List<UserResponse> userResponses = new ArrayList<>();
         for (User user : users) {
@@ -59,12 +59,12 @@ public class UserService {
         return userResponses;
     }
 
-    private boolean isCurrentUserAdmin() {
+    private void assertCurrentUserRole(UserRole userRole) {
         User currentUser = authenticationService
                 .getAuthenticatedUser()
                 .orElseThrow(
                         () -> BusinessExceptions.ACCOUNT_MISSING
                 );
-        return currentUser.getUserRole().equals(UserRole.ADMIN);
+        if (!currentUser.getUserRole().equals(userRole)) throw BusinessExceptions.AUTHORIZATION_MISSING;
     }
 }
