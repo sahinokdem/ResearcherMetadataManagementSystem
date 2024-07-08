@@ -33,8 +33,8 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    private String getAdminToken() {
-        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+    private String getUserToken(String userRole) {
+        User user = userRepository.findByEmail(userRole + "@test.com").orElseThrow(
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         return tokenService.getTokenFor(user);
@@ -43,7 +43,7 @@ public class UserControllerTest {
     @Test
     public void given_AdminUser_when_GetAllUsers_then_StatusCodeIs200_and_AllUsersReturned() {
         //GIVEN
-        String adminToken = getAdminToken();
+        String adminToken = getUserToken("admin");
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -66,7 +66,7 @@ public class UserControllerTest {
     public void given_AdminUser_when_GetSpecificUser_then_StatusCodeIs200_and_UserReturned() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getAdminToken();
+        String adminToken = getUserToken("admin");
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -80,5 +80,65 @@ public class UserControllerTest {
                 () -> assertNotNull(response.getBody(), "User response should not be null"),
                 () -> assertEquals(userId, response.getBody().getId(), "Retrieved user ID should match the requested ID")
         );
+    }
+
+    @Test
+    public void given_EditorUser_when_GetAllUsers_then_FORBIDDEN() {
+        //GIVEN
+        String adminToken = getUserToken("editor");
+        //WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        ResponseEntity<UserResponse> response = restTemplate.exchange(
+                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
+        );
+        //THEN
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    public void given_EditorUser_when_GetSpecificUser_then_FORBIDDEN() {
+        //GIVEN
+        String userId = "45358564-927d-447c-a832-c5c263ada7bc";
+        String adminToken = getUserToken("editor");
+        //WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<JsonNode> request = new HttpEntity<>(headers);
+        ResponseEntity<UserResponse> response = restTemplate.exchange(
+                "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
+        //THEN
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    public void given_HRSpecialistUser_when_GetAllUsers_then_FORBIDDEN() {
+        //GIVEN
+        String adminToken = getUserToken("hr_specialist");
+        //WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        ResponseEntity<UserResponse> response = restTemplate.exchange(
+                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
+        );
+        //THEN
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+    }
+
+    @Test
+    public void given_HRSpecialistUser_when_GetSpecificUser_then_FORBIDDEN() {
+        //GIVEN
+        String userId = "45358564-927d-447c-a832-c5c263ada7bc";
+        String adminToken = getUserToken("hr_specialist");
+        //WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<JsonNode> request = new HttpEntity<>(headers);
+        ResponseEntity<UserResponse> response = restTemplate.exchange(
+                "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
+        //THEN
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 }

@@ -180,7 +180,7 @@ public class AuthenticationControllerTest {
                 "/auth/register", HttpMethod.POST, request, String.class
         );
 
-        // Then (expecting a conflict due to the duplicate email)
+        // Then
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 }
