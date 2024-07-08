@@ -3,12 +3,13 @@ package com.sahinokdem.researcher_metadata.service;
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
+import com.sahinokdem.researcher_metadata.mapper.UserMapper;
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +17,7 @@ public class UserService {
 
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public UserResponse getUser(String userId) {
         assertCurrentUserRole(UserRole.ADMIN);
@@ -24,11 +26,7 @@ public class UserService {
                 .orElseThrow(
                         () -> BusinessExceptions.USER_NOT_FOUND
                 );
-        return new UserResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getUserRole()
-        );
+        return userMapper.toResponse(user);
     }
 
     public UserResponse getCurrentUser() {
@@ -37,26 +35,15 @@ public class UserService {
                 .orElseThrow(
                         () -> BusinessExceptions.ACCOUNT_MISSING
                 );
-        return new UserResponse(
-                currentUser.getId(),
-                currentUser.getEmail(),
-                currentUser.getUserRole()
-        );
+        return userMapper.toResponse(currentUser);
     }
 
     public List<UserResponse> getUsers() {
         assertCurrentUserRole(UserRole.ADMIN);
         List<User> users = userRepository.findAll();
-        List<UserResponse> userResponses = new ArrayList<>();
-        for (User user : users) {
-            userResponses.add(
-                    new UserResponse(
-                            user.getId(),
-                            user.getEmail(),
-                            user.getUserRole()
-                            ));
-        }
-        return userResponses;
+        return users.stream()
+                .map(userMapper::toResponse)
+                .collect(Collectors.toList());
     }
 
     private void assertCurrentUserRole(UserRole userRole) {
