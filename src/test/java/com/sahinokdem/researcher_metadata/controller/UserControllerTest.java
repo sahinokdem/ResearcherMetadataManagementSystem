@@ -11,6 +11,7 @@ import com.sahinokdem.researcher_metadata.model.request.LoginRequest;
 import com.sahinokdem.researcher_metadata.model.response.LoginResponse;
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
+import com.sahinokdem.researcher_metadata.util.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -36,31 +37,13 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    private String getAdminToken() {
-        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        return tokenService.getTokenFor(user);
-    }
-
-    private String getEditorToken() {
-        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        return tokenService.getTokenFor(user);
-    }
-
-    private String getHR_SpecialistToken() {
-        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        return tokenService.getTokenFor(user);
-    }
-
     @Test
     public void given_AdminUser_when_GetAllUsers_then_StatusOk_and_AllUsersReturned() {
         //GIVEN
-        String adminToken = getAdminToken();
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String adminToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -73,8 +56,8 @@ public class UserControllerTest {
         List<UserResponse> users = response.getBody();
         assertAll(
                 () -> assertFalse(users.isEmpty(), "User list should not be empty"),
-                () -> assertTrue(users.stream().allMatch(user ->
-                        user.getId() != null && user.getEmail() != null
+                () -> assertTrue(users.stream().allMatch(eachUser ->
+                        eachUser.getId() != null && eachUser.getEmail() != null
                 ), "All users should have IDs and emails")
         );
     }
@@ -83,7 +66,10 @@ public class UserControllerTest {
     public void given_AdminUser_when_GetSpecificUser_then_StatusOk_and_UserReturned() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getAdminToken();
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String adminToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -102,76 +88,72 @@ public class UserControllerTest {
     @Test
     public void given_EditorUser_when_GetAllUsers_then_Forbidden() {
         //GIVEN
-        String adminToken = getEditorToken();
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String editorToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
+        headers.set("Authorization", "Bearer " + editorToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<UserResponse> response = restTemplate.exchange(
-                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<ErrorDto>() {}
         );
         //THEN
-        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
-        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
-        ErrorDto errorDto = response.getBody();
-        assertNotNull(errorDto);
-        assertEquals(expectedException.getMessage(), errorDto.getMessage());
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
     @Test
     public void given_EditorUser_when_GetSpecificUser_then_Forbidden() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getEditorToken();
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String editorToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
+        headers.set("Authorization", "Bearer " + editorToken);
         HttpEntity<JsonNode> request = new HttpEntity<>(headers);
-        ResponseEntity<UserResponse> response = restTemplate.exchange(
-                "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/user/{id}", HttpMethod.GET, request, ErrorDto.class, userId);
         //THEN
-        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
-        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
-        ErrorDto errorDto = response.getBody();
-        assertNotNull(errorDto);
-        assertEquals(expectedException.getMessage(), errorDto.getMessage());
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
     @Test
     public void given_HRSpecialistUser_when_GetAllUsers_then_Forbidden() {
         //GIVEN
-        String adminToken = getHR_SpecialistToken();
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String hr_specialistToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
+        headers.set("Authorization", "Bearer " + hr_specialistToken);
         HttpEntity<Void> request = new HttpEntity<>(headers);
-        ResponseEntity<UserResponse> response = restTemplate.exchange(
-                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/user", HttpMethod.GET, request, new ParameterizedTypeReference<ErrorDto>() {}
         );
         //THEN
-        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
-        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
-        ErrorDto errorDto = response.getBody();
-        assertNotNull(errorDto);
-        assertEquals(expectedException.getMessage(), errorDto.getMessage());
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
     @Test
     public void given_HRSpecialistUser_when_GetSpecificUser_then_Forbidden() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getHR_SpecialistToken();
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String hr_specialistToken = tokenService.getTokenFor(user);
         //WHEN
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
+        headers.set("Authorization", "Bearer " + hr_specialistToken);
         HttpEntity<JsonNode> request = new HttpEntity<>(headers);
-        ResponseEntity<UserResponse> response = restTemplate.exchange(
-                "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/user/{id}", HttpMethod.GET, request, ErrorDto.class, userId);
         //THEN
-        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
-        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
-        ErrorDto errorDto = response.getBody();
-        assertNotNull(errorDto);
-        assertEquals(expectedException.getMessage(), errorDto.getMessage());
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 }
