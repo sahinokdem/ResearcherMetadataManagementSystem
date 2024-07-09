@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sahinokdem.researcher_metadata.TokenService;
 import com.sahinokdem.researcher_metadata.entity.User;
+import com.sahinokdem.researcher_metadata.exception.BusinessException;
+import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
+import com.sahinokdem.researcher_metadata.exception.ErrorDto;
 import com.sahinokdem.researcher_metadata.model.request.LoginRequest;
 import com.sahinokdem.researcher_metadata.model.response.LoginResponse;
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
@@ -33,17 +36,31 @@ public class UserControllerTest {
     @Autowired
     private UserRepository userRepository;
 
-    private String getUserToken(String userRole) {
-        User user = userRepository.findByEmail(userRole + "@test.com").orElseThrow(
+    private String getAdminToken() {
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        return tokenService.getTokenFor(user);
+    }
+
+    private String getEditorToken() {
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        return tokenService.getTokenFor(user);
+    }
+
+    private String getHR_SpecialistToken() {
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         return tokenService.getTokenFor(user);
     }
 
     @Test
-    public void given_AdminUser_when_GetAllUsers_then_StatusCodeIs200_and_AllUsersReturned() {
+    public void given_AdminUser_when_GetAllUsers_then_StatusOk_and_AllUsersReturned() {
         //GIVEN
-        String adminToken = getUserToken("admin");
+        String adminToken = getAdminToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -63,10 +80,10 @@ public class UserControllerTest {
     }
 
     @Test
-    public void given_AdminUser_when_GetSpecificUser_then_StatusCodeIs200_and_UserReturned() {
+    public void given_AdminUser_when_GetSpecificUser_then_StatusOk_and_UserReturned() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getUserToken("admin");
+        String adminToken = getAdminToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -83,9 +100,9 @@ public class UserControllerTest {
     }
 
     @Test
-    public void given_EditorUser_when_GetAllUsers_then_FORBIDDEN() {
+    public void given_EditorUser_when_GetAllUsers_then_Forbidden() {
         //GIVEN
-        String adminToken = getUserToken("editor");
+        String adminToken = getEditorToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -94,14 +111,18 @@ public class UserControllerTest {
                 "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
         );
         //THEN
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
+        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto);
+        assertEquals(expectedException.getMessage(), errorDto.getMessage());
     }
 
     @Test
-    public void given_EditorUser_when_GetSpecificUser_then_FORBIDDEN() {
+    public void given_EditorUser_when_GetSpecificUser_then_Forbidden() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getUserToken("editor");
+        String adminToken = getEditorToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -109,13 +130,17 @@ public class UserControllerTest {
         ResponseEntity<UserResponse> response = restTemplate.exchange(
                 "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
         //THEN
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
+        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto);
+        assertEquals(expectedException.getMessage(), errorDto.getMessage());
     }
 
     @Test
-    public void given_HRSpecialistUser_when_GetAllUsers_then_FORBIDDEN() {
+    public void given_HRSpecialistUser_when_GetAllUsers_then_Forbidden() {
         //GIVEN
-        String adminToken = getUserToken("hr_specialist");
+        String adminToken = getHR_SpecialistToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -124,14 +149,18 @@ public class UserControllerTest {
                 "/user", HttpMethod.GET, request, new ParameterizedTypeReference<UserResponse>() {}
         );
         //THEN
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
+        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto);
+        assertEquals(expectedException.getMessage(), errorDto.getMessage());
     }
 
     @Test
-    public void given_HRSpecialistUser_when_GetSpecificUser_then_FORBIDDEN() {
+    public void given_HRSpecialistUser_when_GetSpecificUser_then_Forbidden() {
         //GIVEN
         String userId = "45358564-927d-447c-a832-c5c263ada7bc";
-        String adminToken = getUserToken("hr_specialist");
+        String adminToken = getHR_SpecialistToken();
         //WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
@@ -139,6 +168,10 @@ public class UserControllerTest {
         ResponseEntity<UserResponse> response = restTemplate.exchange(
                 "/user/{id}", HttpMethod.GET, request, UserResponse.class, userId);
         //THEN
-        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        BusinessException expectedException = BusinessExceptions.AUTHORIZATION_MISSING;
+        assertEquals(expectedException.getStatusCode(), response.getStatusCode().value());
+        ErrorDto errorDto = response.getBody();
+        assertNotNull(errorDto);
+        assertEquals(expectedException.getMessage(), errorDto.getMessage());
     }
 }
