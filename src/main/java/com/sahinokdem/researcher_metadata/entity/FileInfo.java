@@ -14,8 +14,8 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FileInfo extends BaseEntity {
-    private String originalName;
+    private String name;
     private long size;
-    private String storagePath;
+    private String location;
 }
 
