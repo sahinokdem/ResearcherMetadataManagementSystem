@@ -1,7 +1,11 @@
 package com.sahinokdem.researcher_metadata.model.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
 public class FileResponse {
-    private String id;
-    private String name;
-    private long size;
+    private final String id;
+    private final String name;
+    private final byte[] size;
 }

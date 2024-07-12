@@ -1,10 +1,10 @@
 package com.sahinokdem.researcher_metadata.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -13,9 +13,12 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FileInfo extends BaseEntity {
     private String name;
-    private long size;
     private String location;
+    @Lob
+    @Column(name= "size", length = 1000)
+    private byte[] size;
 }
 
