@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 public interface FileInfoRepository extends JpaRepository<FileInfo, String> {
 
-    Optional<FileInfo> findByName(String fileName);
+    Optional<FileInfo> findById(String fileId);
 }

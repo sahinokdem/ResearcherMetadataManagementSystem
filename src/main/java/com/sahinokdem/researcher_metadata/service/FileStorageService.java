@@ -5,9 +5,11 @@ import com.sahinokdem.researcher_metadata.repository.FileInfoRepository;
 import com.sahinokdem.researcher_metadata.model.response.FileResponse;
 import com.sahinokdem.researcher_metadata.util.FileUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 @Service
@@ -31,5 +33,17 @@ public class FileStorageService {
         );
     }
 
+    public FileSystemResource downloadFile(String fileId) {
+        FileInfo fileInfo = null;
+        try {
+            fileInfo = fileInfoRepository.findById(fileId)
+                    .orElseThrow(() -> new FileNotFoundException(fileId));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        String filePath = fileInfo.getLocation();
+        File file = new File(filePath);
+        return new FileSystemResource(file);
+    }
 }
 
