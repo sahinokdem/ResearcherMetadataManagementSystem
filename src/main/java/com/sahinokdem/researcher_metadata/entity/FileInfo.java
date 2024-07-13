@@ -17,8 +17,6 @@ import javax.persistence.Table;
 public class FileInfo extends BaseEntity {
     private String name;
     private String location;
-    @Lob
-    @Column(name= "size", length = 1000)
-    private byte[] size;
+    private long size;
 }
 

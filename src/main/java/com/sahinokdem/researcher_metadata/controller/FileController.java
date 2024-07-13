@@ -20,13 +20,7 @@ public class FileController {
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        FileResponse response = null;
-        try {
-            response = storageService.storeFile(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return response;
+        return storageService.storeFile(file);
     }
 
     @GetMapping("/{fileId}")

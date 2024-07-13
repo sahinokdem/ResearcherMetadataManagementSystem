@@ -7,5 +7,5 @@ import lombok.Data;
 public class FileResponse {
     private final String id;
     private final String name;
-    private final byte[] size;
+    private final long size;
 }

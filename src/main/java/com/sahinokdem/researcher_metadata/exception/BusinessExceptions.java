@@ -6,5 +6,4 @@ public class BusinessExceptions {
     public static BusinessException INVALID_CREDENTIALS = new BusinessException(ErrorCode.validation, "Invalid credentials");
     public static BusinessException EMAIL_ALREADY_EXISTS = new BusinessException(ErrorCode.account_already_exists, "Email already exists");
     public static BusinessException AUTHORIZATION_MISSING = new BusinessException(ErrorCode.forbidden, "Not authorized to perform this action.");
-    public static BusinessException FILE_NOT_SAVED = new BusinessException(ErrorCode.internal_error, "File not saved");
 }
