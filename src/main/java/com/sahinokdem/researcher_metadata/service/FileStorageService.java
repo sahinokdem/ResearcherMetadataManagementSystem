@@ -1,49 +1,65 @@
 package com.sahinokdem.researcher_metadata.service;
 
+import com.sahinokdem.researcher_metadata.config.StorageConfig;
 import com.sahinokdem.researcher_metadata.entity.FileInfo;
-import com.sahinokdem.researcher_metadata.exception.StorageExceptions;
-import com.sahinokdem.researcher_metadata.mapper.FileMapper;
-import com.sahinokdem.researcher_metadata.repository.FileInfoRepository;
-import com.sahinokdem.researcher_metadata.model.response.FileResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.util.UUID;
+import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 
 @Service
 @AllArgsConstructor
 public class FileStorageService {
 
-    private final FileInfoRepository fileInfoRepository;
-    private final FileLocationService fileLocationService;
-    private final FileMapper fileMapper;
+    private final StorageConfig storageConfig;
 
-    public FileResponse storeFile(MultipartFile file) {
-        String fileLocation = fileLocationService.createLocation(file);
-        if (fileLocation == null) throw StorageExceptions.LOCATION_NULL_ERROR;
+    public String createLocation(MultipartFile file) {
+        LocalDate currentDate = LocalDate.now();
+        String year = String.valueOf(currentDate.getYear());
+        String month = String.format("%02d", currentDate.getMonthValue());
+        String day = String.format("%02d", currentDate.getDayOfMonth());
 
-        FileInfo fileInfo = fileInfoRepository.save(FileInfo.builder()
-                .name(file.getOriginalFilename())
-                .location(fileLocation)
-                .size(file.getSize()).build());
-        return fileMapper.toResponse(fileInfo);
+        String directoryPath = storageConfig.getLocation() + "/" + year + "/" + month + "/" + day + "/";
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        UUID uuid = UUID.randomUUID();
+        String fileExtension = getExtension(file.getOriginalFilename());
+        String fileName = uuid + "." + fileExtension;
+        String fileLocation = directoryPath + fileName;
+
+        InputStream inputStream = null;
+        try {
+            inputStream = file.getInputStream();
+        } catch (IOException e) {
+            throw BusinessExceptions.FILE_READ_ERROR;
+        } try {
+            Files.copy(inputStream, Paths.get(fileLocation), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw BusinessExceptions.FILE_NOT_SAVED;
+        }
+        return fileLocation;
     }
 
-    public ResponseEntity<?> downloadFile(String fileId) {
-        FileInfo fileInfo = fileInfoRepository.findById(fileId)
-                .orElseThrow(() -> StorageExceptions.FILE_NOT_FOUND);
-        String fileLocation = fileInfo.getLocation();
-        byte[] fileBytesForm = null;
-        try {
-            fileBytesForm = Files.readAllBytes(new File(fileLocation).toPath());
-        } catch (IOException e) {
-            throw StorageExceptions.FILE_READ_ERROR;
+    private String getExtension(String originalFilename) {
+        int lastIndexOf = originalFilename.lastIndexOf(".");
+        if (lastIndexOf == -1) {
+            throw BusinessExceptions.INVALID_FILE_FORMAT_ERROR;
         }
-        return fileMapper.toResponseEntity(fileInfo, fileBytesForm);
+        return originalFilename.substring(lastIndexOf + 1);
+    }
+
+    public String createContentDisposition(FileInfo fileInfo) {
+        return "attachment; filename=\"" + fileInfo.getName() + "\"";
     }
 }

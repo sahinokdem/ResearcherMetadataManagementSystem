@@ -5,21 +5,15 @@ import com.sahinokdem.researcher_metadata.model.response.FileResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FileMapper {
-    public FileResponse toResponse(final FileInfo fileInfo) {
+    public FileResponse toResponse(FileInfo fileInfo) {
         return new FileResponse(
                 fileInfo.getId(),
                 fileInfo.getName(),
                 fileInfo.getSize()
         );
-    }
-
-    public ResponseEntity<?> toResponseEntity(FileInfo fileInfo, byte[] fileBytesForm) {
-        String contentDisposition = "attachment; filename=\"" + fileInfo.getName() + "\"";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(fileBytesForm);
     }
 }
