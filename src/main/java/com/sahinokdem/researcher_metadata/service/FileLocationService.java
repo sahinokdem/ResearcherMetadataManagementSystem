@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
@@ -48,6 +49,11 @@ public class FileLocationService {
             throw StorageExceptions.FILE_NOT_SAVED;
         }
         return fileLocation;
+    }
+
+    public String extractFileNameFromLocation(String location) {
+        Path path = Paths.get(location);
+        return path.getFileName().toString();
     }
 
     private String getExtension(String originalFilename) {

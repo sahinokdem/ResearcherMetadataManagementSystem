@@ -1,9 +1,11 @@
 package com.sahinokdem.researcher_metadata.controller;
 
+import com.sahinokdem.researcher_metadata.exception.StorageExceptions;
 import com.sahinokdem.researcher_metadata.model.response.FileResponse;
 import com.sahinokdem.researcher_metadata.service.FileStorageService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +25,9 @@ public class FileController {
         return storageService.storeFile(file);
     }
 
-    @GetMapping("/{fileId}")
-    public ResponseEntity<FileSystemResource> downloadFile(@PathVariable String fileId) {
-        FileSystemResource file = storageService.downloadFile(fileId);
-
-        return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
-                "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    @GetMapping("/download/{fileId}")
+    public ResponseEntity<?> downloadFile(@PathVariable String fileId) {
+        return storageService.downloadFile(fileId);
     }
 }
 
