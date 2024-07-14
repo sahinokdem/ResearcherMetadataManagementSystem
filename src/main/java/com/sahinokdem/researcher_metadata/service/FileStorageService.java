@@ -2,6 +2,7 @@ package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.FileInfo;
 import com.sahinokdem.researcher_metadata.exception.StorageExceptions;
+import com.sahinokdem.researcher_metadata.mapper.FileMapper;
 import com.sahinokdem.researcher_metadata.repository.FileInfoRepository;
 import com.sahinokdem.researcher_metadata.model.response.FileResponse;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,7 @@ public class FileStorageService {
 
     private final FileInfoRepository fileInfoRepository;
     private final FileLocationService fileLocationService;
+    private final FileMapper fileMapper;
 
     public FileResponse storeFile(MultipartFile file) {
         String fileLocation = fileLocationService.createLocation(file);
@@ -29,11 +31,7 @@ public class FileStorageService {
                 .name(file.getOriginalFilename())
                 .location(fileLocation)
                 .size(file.getSize()).build());
-        return new FileResponse(
-                fileInfo.getId(),
-                fileInfo.getName(),
-                fileInfo.getSize()
-        );
+        return fileMapper.toResponse(fileInfo);
     }
 
     public ResponseEntity<?> downloadFile(String fileId) {
@@ -46,9 +44,6 @@ public class FileStorageService {
         } catch (IOException e) {
             throw StorageExceptions.FILE_READ_ERROR;
         }
-        String contentDisposition = "attachment; filename=\"" + fileInfo.getName() + "\"";
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .body(fileBytesForm);
+        return fileMapper.toResponseEntity(fileInfo, fileBytesForm);
     }
 }
