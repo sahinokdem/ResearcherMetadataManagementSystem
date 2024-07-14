@@ -51,11 +51,6 @@ public class FileLocationService {
         return fileLocation;
     }
 
-    public String extractFileNameFromLocation(String location) {
-        Path path = Paths.get(location);
-        return path.getFileName().toString();
-    }
-
     private String getExtension(String originalFilename) {
         int lastIndexOf = originalFilename.lastIndexOf(".");
         if (lastIndexOf == -1) {
