@@ -62,4 +62,12 @@ public class FileStorageService {
     public String createContentDisposition(FileInfo fileInfo) {
         return "attachment; filename=\"" + fileInfo.getName() + "\"";
     }
+
+    public byte[] getFileContent(String fileLocation) {
+        try {
+            return Files.readAllBytes(new File(fileLocation).toPath());
+        } catch (IOException e) {
+            throw BusinessExceptions.FILE_READ_ERROR;
+        }
+    }
 }
