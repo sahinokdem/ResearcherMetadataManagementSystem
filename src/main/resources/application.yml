@@ -7,4 +7,5 @@ spring:
       jwt,
       logging,
       server,
+      storage,
       swagger

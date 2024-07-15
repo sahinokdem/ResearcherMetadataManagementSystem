@@ -1,0 +1,2 @@
+storage:
+  location: ${STORAGE_PATH}
