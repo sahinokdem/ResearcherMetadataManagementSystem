@@ -46,7 +46,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    private void assertCurrentUserRole(UserRole userRole) {
+    public void assertCurrentUserRole(UserRole userRole) {
         User currentUser = authenticationService
                 .getAuthenticatedUser()
                 .orElseThrow(

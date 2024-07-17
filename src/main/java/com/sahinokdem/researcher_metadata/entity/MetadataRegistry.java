@@ -1,6 +1,6 @@
 package com.sahinokdem.researcher_metadata.entity;
 
-import com.sahinokdem.researcher_metadata.util.MetadataRegistryType;
+import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

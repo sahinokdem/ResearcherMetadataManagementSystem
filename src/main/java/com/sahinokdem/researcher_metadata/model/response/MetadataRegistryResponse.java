@@ -1,6 +1,6 @@
 package com.sahinokdem.researcher_metadata.model.response;
 
-import com.sahinokdem.researcher_metadata.util.MetadataRegistryType;
+import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import lombok.Data;
 
 @Data
