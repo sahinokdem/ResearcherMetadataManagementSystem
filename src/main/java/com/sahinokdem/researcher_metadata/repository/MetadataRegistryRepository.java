@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface MetadataRegistryRepository extends JpaRepository<MetadataRegistry, String> {
 
-    Optional<MetadataRegistry> findById(String id);
+    Optional<MetadataRegistry> findByName(String id);
 }

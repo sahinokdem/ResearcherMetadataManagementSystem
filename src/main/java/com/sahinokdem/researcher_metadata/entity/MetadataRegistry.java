@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "metadata-registry")
+@Table(name = "metadata_registry")
 @Getter
 @Setter
 @NoArgsConstructor
