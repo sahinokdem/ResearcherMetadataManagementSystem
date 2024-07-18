@@ -28,4 +28,14 @@ public class MetadataRegistryService {
         metadataRegistryRepository.save(metadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
+
+    public MetadataRegistryResponse updateMetadataRegistry(String metadataRegistryId, MetadataRegistryRequest request) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
+                ()-> BusinessExceptions.REGISTRY_NOT_FOUND);
+        metadataRegistry.setName(request.getName());
+        metadataRegistry.setType(metadataRegistryMapper.toType(request));
+        metadataRegistryRepository.save(metadataRegistry);
+        return metadataRegistryMapper.toResponse(metadataRegistry);
+    }
 }

@@ -12,4 +12,5 @@ public class BusinessExceptions {
     public static BusinessException FILE_NOT_SAVED = new BusinessException(ErrorCode.internal_error, "File not saved");
     public static BusinessException REGISTRY_ALREADY_EXIST = new BusinessException(ErrorCode.already_submitted, "Registry already exists");
     public static BusinessException INVALID_REGISTRY_TYPE = new BusinessException(ErrorCode.validation, "Invalid registry type");
+    public static BusinessException REGISTRY_NOT_FOUND = new BusinessException(ErrorCode.forbidden, "Registry not found");
 }

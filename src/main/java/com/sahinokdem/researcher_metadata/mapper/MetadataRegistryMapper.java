@@ -26,7 +26,7 @@ public class MetadataRegistryMapper {
         );
     }
 
-    private MetadataRegistryType toType(MetadataRegistryRequest request) {
+    public MetadataRegistryType toType(MetadataRegistryRequest request) {
         String normalizedType = request.getType().replaceAll("\\s+", "_").toUpperCase(Locale.ENGLISH);
         try {
             return MetadataRegistryType.valueOf(normalizedType);
