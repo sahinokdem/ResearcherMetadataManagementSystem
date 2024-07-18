@@ -1,6 +1,7 @@
 package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.MetadataRegistry;
+import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryRequest;
@@ -19,12 +20,13 @@ public class MetadataRegistryService {
 
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
-        metadataRegistryRepository.findByName(request.getName()).ifPresent(
+        MetadataRegistryType metadataRegistryType = metadataRegistryTypeService.getType(request.getType());
+        metadataRegistryRepository.findByNameAndType(request.getName(), metadataRegistryType).ifPresent(
                 metadataRegistry -> { throw BusinessExceptions.REGISTRY_ALREADY_EXIST;
         });
         MetadataRegistry metadataRegistry = new MetadataRegistry(
                 request.getName(),
-                metadataRegistryTypeService.getType(request.getType())
+                metadataRegistryType
         );
         metadataRegistryRepository.save(metadataRegistry);
         return new MetadataRegistryResponse(
