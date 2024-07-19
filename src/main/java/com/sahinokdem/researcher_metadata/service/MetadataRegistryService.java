@@ -4,6 +4,7 @@ import com.sahinokdem.researcher_metadata.entity.MetadataRegistry;
 import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
+import com.sahinokdem.researcher_metadata.mapper.MetadataRegistryMapper;
 import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
@@ -15,24 +16,16 @@ import org.springframework.stereotype.Service;
 public class MetadataRegistryService {
 
     private final UserService userService;
-    private final MetadataRegistryTypeService metadataRegistryTypeService;
+    private final MetadataRegistryMapper metadataRegistryMapper;
     private final MetadataRegistryRepository metadataRegistryRepository;
 
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
-        MetadataRegistryType metadataRegistryType = metadataRegistryTypeService.getType(request.getType());
         metadataRegistryRepository.findByName(request.getName()).ifPresent(
                 metadataRegistry -> { throw BusinessExceptions.REGISTRY_ALREADY_EXIST;
         });
-        MetadataRegistry metadataRegistry = new MetadataRegistry(
-                request.getName(),
-                metadataRegistryType
-        );
+        MetadataRegistry metadataRegistry = metadataRegistryMapper.toEntity(request);
         metadataRegistryRepository.save(metadataRegistry);
-        return new MetadataRegistryResponse(
-                metadataRegistry.getId(),
-                metadataRegistry.getName(),
-                metadataRegistry.getType()
-        );
+        return metadataRegistryMapper.toResponse(metadataRegistry);
     }
 }

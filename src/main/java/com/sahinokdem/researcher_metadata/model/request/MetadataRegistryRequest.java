@@ -5,7 +5,6 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 public class MetadataRegistryRequest {
-
     @NotEmpty
     private final String name;
     @NotEmpty
