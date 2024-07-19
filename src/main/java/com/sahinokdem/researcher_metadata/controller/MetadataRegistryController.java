@@ -21,7 +21,7 @@ public class MetadataRegistryController {
         return metadataRegistryService.addMetadataRegistry(metadataRegistryRequest);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/{metadataRegistryId}")
     public MetadataRegistryResponse updateMetadataRegistry(
             @PathVariable String metadataRegistryId,
             @Valid @RequestBody MetadataRegistryRequest metadataRegistryRequest) {
