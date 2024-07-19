@@ -21,7 +21,7 @@ public class MetadataRegistryService {
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataRegistryType metadataRegistryType = metadataRegistryTypeService.getType(request.getType());
-        metadataRegistryRepository.findByNameAndType(request.getName(), metadataRegistryType).ifPresent(
+        metadataRegistryRepository.findByName(request.getName()).ifPresent(
                 metadataRegistry -> { throw BusinessExceptions.REGISTRY_ALREADY_EXIST;
         });
         MetadataRegistry metadataRegistry = new MetadataRegistry(
