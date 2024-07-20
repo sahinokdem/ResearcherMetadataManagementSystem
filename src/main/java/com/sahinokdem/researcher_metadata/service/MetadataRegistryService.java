@@ -33,7 +33,7 @@ public class MetadataRegistryService {
                 ()-> BusinessExceptions.REGISTRY_NOT_FOUND);
         if (!request.getName().equals(metadataRegistry.getName())) assertRegistryNameUnique(request);
         metadataRegistry.setName(request.getName());
-        metadataRegistry.setType(metadataRegistryMapper.toType(request));
+        metadataRegistry.setType(metadataRegistryMapper.toType(request.getType()));
         metadataRegistryRepository.save(metadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
