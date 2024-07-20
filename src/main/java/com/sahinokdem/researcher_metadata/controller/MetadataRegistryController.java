@@ -27,4 +27,9 @@ public class MetadataRegistryController {
             @Valid @RequestBody MetadataRegistryRequest metadataRegistryRequest) {
         return metadataRegistryService.updateMetadataRegistry(metadataRegistryId, metadataRegistryRequest);
     }
+
+    @DeleteMapping("/{metadataRegistryId}")
+    public void deleteMetadataRegistry(@PathVariable String metadataRegistryId) {
+        metadataRegistryService.deleteMetadataRegistry(metadataRegistryId);
+    }
 }

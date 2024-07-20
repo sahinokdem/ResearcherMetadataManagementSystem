@@ -43,4 +43,9 @@ public class MetadataRegistryService {
                 metadataRegistry -> { throw BusinessExceptions.REGISTRY_NAME_ALREADY_EXIST;
                 });
     }
+
+    public void deleteMetadataRegistry(String metadataRegistryId) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        metadataRegistryRepository.deleteById(metadataRegistryId);
+    }
 }
