@@ -22,12 +22,12 @@ public class MetadataRegistryMapper {
     public MetadataRegistry toEntity(MetadataRegistryRequest request) {
         return new MetadataRegistry(
                 request.getName(),
-                toType(request)
+                toType(request.getType())
         );
     }
 
-    private MetadataRegistryType toType(MetadataRegistryRequest request) {
-        String normalizedType = request.getType().replaceAll("\\s+", "_").toUpperCase(Locale.ENGLISH);
+    private MetadataRegistryType toType(String type) {
+        String normalizedType = type.replaceAll("\\s+", "_").toUpperCase(Locale.ENGLISH);
         try {
             return MetadataRegistryType.valueOf(normalizedType);
         } catch (IllegalArgumentException e) {
