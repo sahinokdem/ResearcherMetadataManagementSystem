@@ -34,4 +34,9 @@ public class MetadataRegistryService {
         metadataRegistryRepository.save(updatedMetadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
+
+    public void deleteMetadataRegistry(String metadataRegistryId) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        metadataRegistryRepository.deleteById(metadataRegistryId);
+    }
 }
