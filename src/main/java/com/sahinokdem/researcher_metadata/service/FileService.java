@@ -20,7 +20,6 @@ public class FileService {
 
     private final FileInfoRepository fileInfoRepository;
     private final FileStorageService fileStorageService;
-    private final FileContentService fileContentService;
     private final FileInfoService fileInfoService;
     private final FileMapper fileMapper;
 
@@ -34,7 +33,7 @@ public class FileService {
         FileInfo fileInfo = fileInfoRepository.findById(fileId)
                 .orElseThrow(() -> BusinessExceptions.FILE_NOT_FOUND);
         String fileLocation = fileInfo.getLocation();
-        byte[] fileContent = fileContentService.getFileContent(fileLocation);
+        byte[] fileContent = fileStorageService.getFileContent(fileLocation);
         String contentDisposition = fileStorageService.createContentDisposition(fileInfo);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
