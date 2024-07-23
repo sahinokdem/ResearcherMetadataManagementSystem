@@ -39,9 +39,4 @@ public class MetadataRegistryService {
         userService.assertCurrentUserRole(UserRole.EDITOR);
         metadataRegistryRepository.deleteById(metadataRegistryId);
     }
-
-    public void deleteMetadataRegistry(String metadataRegistryId) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
-        metadataRegistryRepository.deleteById(metadataRegistryId);
-    }
 }
