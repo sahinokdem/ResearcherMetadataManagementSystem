@@ -1,6 +1,8 @@
 package com.sahinokdem.researcher_metadata.mapper;
 
 import com.sahinokdem.researcher_metadata.entity.MetadataValue;
+import com.sahinokdem.researcher_metadata.entity.User;
+import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.model.request.MetadataValueRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
@@ -26,7 +28,7 @@ public class MetadataValueMapper {
     }
 
     public MetadataValue toEntity(MetadataValueRequest request) {
-        assertUserExists(request.getUserId());
+        assertUserIsResearcher(request.getUserId());
         metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
         return new MetadataValue(
                 request.getUserId(),
@@ -35,10 +37,11 @@ public class MetadataValueMapper {
         );
     }
 
-    private void assertUserExists(String userId) {
-        userRepository.findById(userId)
+    private void assertUserIsResearcher(String userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(
                         () -> BusinessExceptions.USER_NOT_FOUND
                 );
+        if (!user.getUserRole().equals(UserRole.RESEARCHER)) throw BusinessExceptions.NON_RESEARCHER_WITH_METADATA;
     }
 }
