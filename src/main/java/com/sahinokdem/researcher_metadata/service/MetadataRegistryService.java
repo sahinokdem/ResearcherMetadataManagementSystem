@@ -21,7 +21,6 @@ public class MetadataRegistryService {
 
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
-        assertRegistryNameUnique(request.getName());
         MetadataRegistry metadataRegistry = metadataRegistryMapper.toEntity(request);
         metadataRegistryRepository.save(metadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
@@ -31,16 +30,8 @@ public class MetadataRegistryService {
         userService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
                 ()-> BusinessExceptions.REGISTRY_NOT_FOUND);
-        if (!request.getName().equals(metadataRegistry.getName())) assertRegistryNameUnique(request.getName());
-        metadataRegistry.setName(request.getName());
-        metadataRegistry.setType(metadataRegistryMapper.toType(request.getType()));
-        metadataRegistryRepository.save(metadataRegistry);
+        MetadataRegistry updatedMetadataRegistry = metadataRegistryMapper.toEntity(request, metadataRegistry);
+        metadataRegistryRepository.save(updatedMetadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
-    }
-
-    private void assertRegistryNameUnique(String name) {
-        metadataRegistryRepository.findByName(name).ifPresent(
-                metadataRegistry -> { throw BusinessExceptions.REGISTRY_NAME_ALREADY_EXIST;
-                });
     }
 }
