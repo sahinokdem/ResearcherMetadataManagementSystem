@@ -20,4 +20,12 @@ public class MetadataValueController {
             @Valid @RequestBody MetadataValueRequest metadataValueRequest) {
         return metadataValueService.addMetadataValue(metadataValueRequest);
     }
+
+    @PutMapping("/{metadataValueId}")
+    public MetadataValueResponse updateMetadataValue(
+            @PathVariable String metadataValueId
+            , @Valid @RequestBody MetadataValueRequest metadataValueRequest
+    ) {
+        return metadataValueService.updateMetadataValue(metadataValueId, metadataValueRequest);
+    }
 }
