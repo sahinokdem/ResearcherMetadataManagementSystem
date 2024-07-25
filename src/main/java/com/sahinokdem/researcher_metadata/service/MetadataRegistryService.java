@@ -21,11 +21,17 @@ public class MetadataRegistryService {
 
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
-        metadataRegistryRepository.findByName(request.getName()).ifPresent(
-                metadataRegistry -> { throw BusinessExceptions.REGISTRY_ALREADY_EXIST;
-        });
         MetadataRegistry metadataRegistry = metadataRegistryMapper.toEntity(request);
         metadataRegistryRepository.save(metadataRegistry);
+        return metadataRegistryMapper.toResponse(metadataRegistry);
+    }
+
+    public MetadataRegistryResponse updateMetadataRegistry(String metadataRegistryId, MetadataRegistryRequest request) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
+                ()-> BusinessExceptions.REGISTRY_NOT_FOUND);
+        MetadataRegistry updatedMetadataRegistry = metadataRegistryMapper.toEntity(request, metadataRegistry);
+        metadataRegistryRepository.save(updatedMetadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
 }
