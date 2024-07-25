@@ -38,7 +38,12 @@ public class MetadataValueMapper {
     }
 
     public MetadataValue toEntity(MetadataValueRequest request, MetadataValue metadataValue) {
-        return new MetadataValue();
+        assertUserIsResearcher(request.getUserId());
+        metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
+        metadataValue.setUserId(request.getUserId());
+        metadataValue.setMetadataRegistryId(request.getRegistryId());
+        metadataValue.setValue(request.getValue());
+        return metadataValue;
     }
 
 
