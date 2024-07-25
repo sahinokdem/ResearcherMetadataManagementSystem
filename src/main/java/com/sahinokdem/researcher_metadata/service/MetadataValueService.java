@@ -36,6 +36,7 @@ public class MetadataValueService {
 
     public void deleteMetadataValue(String metadataValueId) {
         userService.assertCurrentUserRole(UserRole.EDITOR);
+
         metadataValueRepository.deleteById(metadataValueId);
     }
 }

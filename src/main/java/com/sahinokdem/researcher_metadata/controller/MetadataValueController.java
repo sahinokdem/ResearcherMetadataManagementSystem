@@ -24,8 +24,12 @@ public class MetadataValueController {
     @PutMapping("/{metadataValueId}")
     public MetadataValueResponse updateMetadataValue(
             @PathVariable String metadataValueId
-            , @Valid @RequestBody MetadataValueRequest metadataValueRequest
-    ) {
+            , @Valid @RequestBody MetadataValueRequest metadataValueRequest) {
         return metadataValueService.updateMetadataValue(metadataValueId, metadataValueRequest);
+    }
+
+    @DeleteMapping("/{metadataValueId}")
+    public void deleteMetadataValue(@PathVariable String metadataValueId) {
+        metadataValueService.deleteMetadataValue(metadataValueId);
     }
 }
