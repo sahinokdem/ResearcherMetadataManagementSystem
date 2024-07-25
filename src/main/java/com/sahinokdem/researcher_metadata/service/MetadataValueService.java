@@ -33,4 +33,9 @@ public class MetadataValueService {
         metadataValueRepository.save(updatedMetadataValue);
         return metadataValueMapper.toResponse(updatedMetadataValue);
     }
+
+    public void deleteMetadataValue(String metadataValueId) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        metadataValueRepository.deleteById(metadataValueId);
+    }
 }
