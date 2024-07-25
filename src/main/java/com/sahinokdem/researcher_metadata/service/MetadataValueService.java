@@ -2,6 +2,7 @@ package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.MetadataValue;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
+import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.mapper.MetadataValueMapper;
 import com.sahinokdem.researcher_metadata.model.request.MetadataValueRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
@@ -22,5 +23,14 @@ public class MetadataValueService {
         MetadataValue metadataValue = metadataValueMapper.toEntity(request);
         metadataValueRepository.save(metadataValue);
         return metadataValueMapper.toResponse(metadataValue);
+    }
+
+    public MetadataValueResponse updateMetadataValue(String metadataValueId, MetadataValueRequest request) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        MetadataValue metadataValue = metadataValueRepository.findById(metadataValueId).orElseThrow(
+                () -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
+        MetadataValue updatedMetadataValue = metadataValueMapper.toEntity(request, metadataValue);
+        metadataValueRepository.save(updatedMetadataValue);
+        return metadataValueMapper.toResponse(updatedMetadataValue);
     }
 }

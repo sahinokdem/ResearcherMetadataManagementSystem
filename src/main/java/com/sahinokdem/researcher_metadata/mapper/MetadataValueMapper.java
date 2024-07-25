@@ -37,6 +37,11 @@ public class MetadataValueMapper {
         );
     }
 
+    public MetadataValue toEntity(MetadataValueRequest request, MetadataValue metadataValue) {
+        return new MetadataValue();
+    }
+
+
     private void assertUserIsResearcher(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(
