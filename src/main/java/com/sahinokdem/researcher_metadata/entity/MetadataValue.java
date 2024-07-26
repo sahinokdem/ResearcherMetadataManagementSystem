@@ -14,7 +14,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MetadataValue extends BaseEntity {
-    private String userId;
+    @ManyToOne
+    private User owner;
     @ManyToOne(fetch = FetchType.LAZY)
     private MetadataRegistry metadataRegistry;
     private String value;

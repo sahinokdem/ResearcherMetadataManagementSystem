@@ -21,31 +21,31 @@ public class MetadataValueMapper {
     public MetadataValueResponse toResponse(MetadataValue metadataValue) {
         return new MetadataValueResponse(
                 metadataValue.getId(),
-                metadataValue.getUserId(),
+                metadataValue.getOwner().getId(),
                 metadataValue.getMetadataRegistry().getId(),
                 metadataValue.getValue()
         );
     }
 
-    public MetadataValue toEntity(MetadataValueRequest request) {
+    public MetadataValue toEntity(User owner, MetadataValueRequest request) {
         assertUserIsResearcher(request.getUserId());
         metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
         return new MetadataValue(
-                request.getUserId(),
+                owner,
                 metadataRegistryTypeService.getMetadataRegistry(request.getRegistryId()),
                 request.getValue()
         );
     }
 
-    public MetadataValue toEntity(MetadataValueRequest request, MetadataValue metadataValue) {
+    public MetadataValue toEntity(User owner, MetadataValueRequest request, MetadataValue metadataValue) {
         assertUserIsResearcher(request.getUserId());
         metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
-        metadataValue.setUserId(request.getUserId());
-        metadataValue.setMetadataRegistry(metadataRegistryTypeService.getMetadataRegistry(request.getRegistryId()));
+        metadataValue.setOwner(owner);
+        metadataValue.setMetadataRegistry(
+                metadataRegistryTypeService.getMetadataRegistry(request.getRegistryId()));
         metadataValue.setValue(request.getValue());
         return metadataValue;
     }
-
 
     private void assertUserIsResearcher(String userId) {
         User user = userRepository.findById(userId)
