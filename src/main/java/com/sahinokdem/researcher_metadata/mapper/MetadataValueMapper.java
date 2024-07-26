@@ -3,11 +3,13 @@ package com.sahinokdem.researcher_metadata.mapper;
 import com.sahinokdem.researcher_metadata.entity.MetadataValue;
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
+import com.sahinokdem.researcher_metadata.exception.BusinessException;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.model.request.MetadataValueRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import com.sahinokdem.researcher_metadata.service.MetadataRegistryTypeService;
+import com.sahinokdem.researcher_metadata.service.UserRoleService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ public class MetadataValueMapper {
 
     private final UserRepository userRepository;
     private final MetadataRegistryTypeService metadataRegistryTypeService;
+    private final UserRoleService userRoleService;
 
     public MetadataValueResponse toResponse(MetadataValue metadataValue) {
         return new MetadataValueResponse(
@@ -48,10 +51,10 @@ public class MetadataValueMapper {
     }
 
     private void assertUserIsResearcher(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(
-                        () -> BusinessExceptions.USER_NOT_FOUND
-                );
-        if (!user.getUserRole().equals(UserRole.RESEARCHER)) throw BusinessExceptions.NON_RESEARCHER_WITH_METADATA;
+        try {
+            userRoleService.checkSpecificUserRole(userId, UserRole.RESEARCHER);
+        } catch (BusinessException authorizationMissingException) {
+            throw BusinessExceptions.NON_RESEARCHER_WITH_METADATA;
+        }
     }
 }
