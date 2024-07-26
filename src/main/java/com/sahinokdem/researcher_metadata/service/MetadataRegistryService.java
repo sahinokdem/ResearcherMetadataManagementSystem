@@ -11,6 +11,9 @@ import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class MetadataRegistryService {
@@ -45,5 +48,13 @@ public class MetadataRegistryService {
         MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
                 () -> BusinessExceptions.REGISTRY_NOT_FOUND);
         return metadataRegistryMapper.toResponse(metadataRegistry);
+    }
+
+    public List<MetadataRegistryResponse> getAllMetadataRegistries() {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        List<MetadataRegistry> metadataRegistries = metadataRegistryRepository.findAll();
+        return metadataRegistries.stream()
+                .map(metadataRegistryMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }
