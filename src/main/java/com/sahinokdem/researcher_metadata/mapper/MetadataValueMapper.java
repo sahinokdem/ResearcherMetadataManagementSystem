@@ -51,10 +51,7 @@ public class MetadataValueMapper {
     }
 
     private void assertUserIsResearcher(String userId) {
-        try {
-            userRoleService.checkSpecificUserRole(userId, UserRole.RESEARCHER);
-        } catch (BusinessException authorizationMissingException) {
+        if (!userRoleService.checkSpecificUserRole(userId, UserRole.RESEARCHER))
             throw BusinessExceptions.NON_RESEARCHER_WITH_METADATA;
-        }
     }
 }

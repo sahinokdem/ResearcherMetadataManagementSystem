@@ -18,10 +18,6 @@ public class UserRoleService {
         if (!checkCurrentUserRole(userRole)) throw BusinessExceptions.AUTHORIZATION_MISSING;
     }
 
-    public void assertSpecificUserRole(String userId, UserRole userRole) {
-        if (!checkSpecificUserRole(userId, userRole)) throw BusinessExceptions.AUTHORIZATION_MISSING;
-    }
-
     public boolean checkCurrentUserRole(UserRole userRole) {
         return getCurrentUserRole().equals(userRole);
     }
