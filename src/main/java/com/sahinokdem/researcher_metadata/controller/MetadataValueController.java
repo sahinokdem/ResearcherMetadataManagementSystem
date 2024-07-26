@@ -32,4 +32,9 @@ public class MetadataValueController {
     public void deleteMetadataValue(@PathVariable String metadataValueId) {
         metadataValueService.deleteMetadataValue(metadataValueId);
     }
+
+    @GetMapping("/{metadataValueId}")
+    public MetadataValueResponse getMetadataValue(@PathVariable String metadataValueId) {
+        return metadataValueService.getMetadataValue(metadataValueId);
+    }
 }
