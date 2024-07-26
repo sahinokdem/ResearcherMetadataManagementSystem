@@ -17,13 +17,15 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class MetadataValueService {
 
-    private final UserService userService;
+    private final AuthenticationService authenticationService;
+    private final UserRoleService userRoleService;
     private final MetadataValueMapper metadataValueMapper;
     private final MetadataValueRepository metadataValueRepository;
     private final UserRepository userRepository;
 
+
     public MetadataValueResponse addMetadataValue(MetadataValueRequest request) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         User owner = userRepository
                 .findById(request.getUserId())
                 .orElseThrow(
@@ -35,7 +37,7 @@ public class MetadataValueService {
     }
 
     public MetadataValueResponse updateMetadataValue(String metadataValueId, MetadataValueRequest request) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataValue metadataValue = metadataValueRepository.findById(metadataValueId).orElseThrow(
                 () -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
         User owner = userRepository
@@ -49,7 +51,25 @@ public class MetadataValueService {
     }
 
     public void deleteMetadataValue(String metadataValueId) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         metadataValueRepository.deleteById(metadataValueId);
+    }
+
+    public MetadataValueResponse getMetadataValue(String metadataValueId) {
+        MetadataValue metadataValue = getMetadataValueEntity(metadataValueId);
+        return metadataValueMapper.toResponse(metadataValue);
+    }
+
+    private MetadataValue getMetadataValueEntity(String metadataValueId) {
+        if (userRoleService.checkCurrentUserRole(UserRole.RESEARCHER)) {
+            User owner = authenticationService.getAuthenticatedUser();
+            return metadataValueRepository.findByOwnerAndId(owner, metadataValueId)
+                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
+        } else if (userRoleService.checkCurrentUserRole(UserRole.EDITOR)) {
+            return metadataValueRepository.findById(metadataValueId)
+                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
+        } else {
+            throw BusinessExceptions.AUTHORIZATION_MISSING;
+        }
     }
 }
