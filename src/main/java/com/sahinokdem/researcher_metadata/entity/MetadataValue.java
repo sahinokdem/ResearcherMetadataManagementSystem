@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 @Entity
 @Table(name = "metadata_value")
@@ -15,7 +15,8 @@ import javax.persistence.Table;
 @AllArgsConstructor
 public class MetadataValue extends BaseEntity {
     private String userId;
-    private String metadataRegistryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private MetadataRegistry metadataRegistry;
     private String value;
 }
 

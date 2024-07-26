@@ -22,7 +22,7 @@ public class MetadataValueMapper {
         return new MetadataValueResponse(
                 metadataValue.getId(),
                 metadataValue.getUserId(),
-                metadataValue.getMetadataRegistryId(),
+                metadataValue.getMetadataRegistry().getId(),
                 metadataValue.getValue()
         );
     }
@@ -32,7 +32,7 @@ public class MetadataValueMapper {
         metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
         return new MetadataValue(
                 request.getUserId(),
-                request.getRegistryId(),
+                metadataRegistryTypeService.getMetadataRegistry(request.getRegistryId()),
                 request.getValue()
         );
     }
@@ -41,7 +41,7 @@ public class MetadataValueMapper {
         assertUserIsResearcher(request.getUserId());
         metadataRegistryTypeService.assertValueIsValid(request.getRegistryId(), request.getValue());
         metadataValue.setUserId(request.getUserId());
-        metadataValue.setMetadataRegistryId(request.getRegistryId());
+        metadataValue.setMetadataRegistry(metadataRegistryTypeService.getMetadataRegistry(request.getRegistryId()));
         metadataValue.setValue(request.getValue());
         return metadataValue;
     }

@@ -5,8 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "metadata_registry")
@@ -17,4 +18,6 @@ import javax.persistence.Table;
 public class MetadataRegistry extends BaseEntity {
         private String name;
         private MetadataRegistryType type;
+        @OneToMany(mappedBy = "metadataRegistry", cascade = CascadeType.ALL)
+        private List<MetadataValue> metadataValues;
 }

@@ -17,6 +17,11 @@ public class MetadataRegistryTypeService {
 
     private final MetadataRegistryRepository metadataRegistryRepository;
 
+    public MetadataRegistry getMetadataRegistry(String metadataRegistryId) {
+        return metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
+                () -> BusinessExceptions.REGISTRY_NOT_FOUND);
+    }
+
     public void assertValueIsValid(String metadataRegistryId, String value) {
         MetadataRegistryType metadataRegistryType = getType(metadataRegistryId);
         switch (metadataRegistryType) {
