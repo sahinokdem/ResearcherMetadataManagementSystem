@@ -39,4 +39,11 @@ public class MetadataRegistryService {
         userService.assertCurrentUserRole(UserRole.EDITOR);
         metadataRegistryRepository.deleteById(metadataRegistryId);
     }
+
+    public MetadataRegistryResponse getMetadataRegistry(String metadataRegistryId) {
+        userService.assertCurrentUserRole(UserRole.EDITOR);
+        MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
+                () -> BusinessExceptions.REGISTRY_NOT_FOUND);
+        return metadataRegistryMapper.toResponse(metadataRegistry);
+    }
 }
