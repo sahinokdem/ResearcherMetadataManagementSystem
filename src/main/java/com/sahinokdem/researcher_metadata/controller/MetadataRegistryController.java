@@ -32,4 +32,9 @@ public class MetadataRegistryController {
     public void deleteMetadataRegistry(@PathVariable String metadataRegistryId) {
         metadataRegistryService.deleteMetadataRegistry(metadataRegistryId);
     }
+
+    @GetMapping("/{metadataRegistryId}")
+    public MetadataRegistryResponse getMetadataRegistry(@PathVariable String metadataRegistryId) {
+        return metadataRegistryService.getMetadataRegistry(metadataRegistryId);
+    }
 }
