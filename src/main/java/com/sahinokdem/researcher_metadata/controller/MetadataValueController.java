@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/metadata-value")
@@ -36,5 +37,10 @@ public class MetadataValueController {
     @GetMapping("/{metadataValueId}")
     public MetadataValueResponse getMetadataValue(@PathVariable String metadataValueId) {
         return metadataValueService.getMetadataValue(metadataValueId);
+    }
+
+    @GetMapping
+    public List<MetadataValueResponse> getAllMetadataValue() {
+        return metadataValueService.getAllMetadataValues();
     }
 }

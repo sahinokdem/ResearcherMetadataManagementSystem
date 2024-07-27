@@ -13,11 +13,14 @@ import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class MetadataValueService {
 
-    private final AuthenticationService authenticationService;
+    private final MetadataValueOwnerService metadataValueOwnerService;
     private final UserRoleService userRoleService;
     private final MetadataValueMapper metadataValueMapper;
     private final MetadataValueRepository metadataValueRepository;
@@ -56,20 +59,15 @@ public class MetadataValueService {
     }
 
     public MetadataValueResponse getMetadataValue(String metadataValueId) {
-        MetadataValue metadataValue = getMetadataValueEntity(metadataValueId);
+        MetadataValue metadataValue = metadataValueOwnerService.getMetadataValue(metadataValueId);
         return metadataValueMapper.toResponse(metadataValue);
     }
 
-    private MetadataValue getMetadataValueEntity(String metadataValueId) {
-        if (userRoleService.checkCurrentUserRole(UserRole.RESEARCHER)) {
-            User owner = authenticationService.getAuthenticatedUser();
-            return metadataValueRepository.findByOwnerAndId(owner, metadataValueId)
-                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
-        } else if (userRoleService.checkCurrentUserRole(UserRole.EDITOR)) {
-            return metadataValueRepository.findById(metadataValueId)
-                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
-        } else {
-            throw BusinessExceptions.AUTHORIZATION_MISSING;
-        }
+    public List<MetadataValueResponse> getAllMetadataValues() {
+        List<MetadataValue> metadataValues = metadataValueOwnerService.getAllMetadataValues();
+        return metadataValues.stream()
+                .map(metadataValueMapper::toResponse)
+                .collect(Collectors.toList());
     }
+
 }
