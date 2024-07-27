@@ -1,5 +1,6 @@
 package com.sahinokdem.researcher_metadata.service;
 
+import com.sahinokdem.researcher_metadata.entity.MetadataRegistry;
 import com.sahinokdem.researcher_metadata.entity.MetadataValue;
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
@@ -8,6 +9,7 @@ import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.mapper.MetadataValueMapper;
 import com.sahinokdem.researcher_metadata.model.request.MetadataValueRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
+import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import com.sahinokdem.researcher_metadata.repository.MetadataValueRepository;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -23,6 +25,7 @@ public class MetadataValueService {
     private final MetadataValueOwnerService metadataValueOwnerService;
     private final UserRoleService userRoleService;
     private final MetadataValueMapper metadataValueMapper;
+    private final MetadataRegistryRepository metadataRegistryRepository;
     private final MetadataValueRepository metadataValueRepository;
     private final UserRepository userRepository;
 
@@ -70,4 +73,10 @@ public class MetadataValueService {
                 .collect(Collectors.toList());
     }
 
+    public List<MetadataValueResponse> getMetadataValuesByRegistry(String registryName) {
+        List<MetadataValue> metadataValues = metadataValueOwnerService.getAllMetadataValuesByRegistry(registryName);
+        return metadataValues.stream()
+                .map(metadataValueMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 }

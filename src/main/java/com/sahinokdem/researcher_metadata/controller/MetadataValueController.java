@@ -40,7 +40,12 @@ public class MetadataValueController {
     }
 
     @GetMapping
-    public List<MetadataValueResponse> getAllMetadataValue() {
+    public List<MetadataValueResponse> getAllMetadataValues() {
         return metadataValueService.getAllMetadataValues();
+    }
+
+    @GetMapping("/type")
+    public List<MetadataValueResponse> getAllMetadataValuesByRegistry(@RequestParam String registryName) {
+        return metadataValueService.getMetadataValuesByRegistry(registryName);
     }
 }
