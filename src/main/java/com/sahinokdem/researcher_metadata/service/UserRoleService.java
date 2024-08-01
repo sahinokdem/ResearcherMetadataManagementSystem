@@ -2,6 +2,7 @@ package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
+import com.sahinokdem.researcher_metadata.exception.BusinessException;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -35,5 +36,10 @@ public class UserRoleService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> BusinessExceptions.ACCOUNT_MISSING);
         return user.getUserRole();
+    }
+
+    public void assertUserIsResearcher(BusinessException exception, String userId) {
+        if (!checkSpecificUserRole(userId, UserRole.RESEARCHER))
+            throw exception;
     }
 }
