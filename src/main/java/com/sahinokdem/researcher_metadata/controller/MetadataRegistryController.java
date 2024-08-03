@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/metadata-registry")
@@ -31,5 +32,15 @@ public class MetadataRegistryController {
     @DeleteMapping("/{metadataRegistryId}")
     public void deleteMetadataRegistry(@PathVariable String metadataRegistryId) {
         metadataRegistryService.deleteMetadataRegistry(metadataRegistryId);
+    }
+
+    @GetMapping("/{metadataRegistryId}")
+    public MetadataRegistryResponse getMetadataRegistry(@PathVariable String metadataRegistryId) {
+        return metadataRegistryService.getMetadataRegistry(metadataRegistryId);
+    }
+
+    @GetMapping
+    public List<MetadataRegistryResponse> getAllMetadataRegistries() {
+        return metadataRegistryService.getAllMetadataRegistries();
     }
 }

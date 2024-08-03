@@ -12,5 +12,9 @@ public class BusinessExceptions {
     public static BusinessException FILE_NOT_SAVED = new BusinessException(ErrorCode.internal_error, "File not saved");
     public static BusinessException REGISTRY_NAME_ALREADY_EXIST = new BusinessException(ErrorCode.already_submitted, "Registry name already exists");
     public static BusinessException INVALID_REGISTRY_TYPE = new BusinessException(ErrorCode.validation, "Invalid registry type");
-    public static BusinessException REGISTRY_NOT_FOUND = new BusinessException(ErrorCode.forbidden, "Registry not found");
+    public static BusinessException REGISTRY_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Registry not found");
+    public static BusinessException METADATA_VALUE_INVALID = new BusinessException(ErrorCode.validation, "Metadata value invalid");
+    public static BusinessException REGISTRY_TYPE_NOT_FOUND = new BusinessException(ErrorCode.internal_error, "Registry type not found");
+    public static BusinessException NON_RESEARCHER_WITH_METADATA  = new BusinessException(ErrorCode.internal_error, "User is not researcher and has metadata");
+    public static BusinessException METADATA_VALUE_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Metadata value not found");
 }

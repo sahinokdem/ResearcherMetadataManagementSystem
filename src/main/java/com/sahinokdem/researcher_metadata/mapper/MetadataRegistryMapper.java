@@ -9,6 +9,7 @@ import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 @Service
@@ -29,7 +30,8 @@ public class MetadataRegistryMapper {
         assertRegistryNameUnique(request.getName());
         return new MetadataRegistry(
                 request.getName(),
-                toType(request.getType())
+                toType(request.getType()),
+                new ArrayList<>()
         );
     }
 
