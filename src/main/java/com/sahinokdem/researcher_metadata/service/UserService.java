@@ -16,11 +16,12 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final AuthenticationService authenticationService;
+    private final UserRoleService userRoleService;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     public UserResponse getUser(String userId) {
-        assertCurrentUserRole(UserRole.ADMIN);
+        userRoleService.assertCurrentUserRole(UserRole.ADMIN);
         User user = userRepository
                 .findById(userId)
                 .orElseThrow(
@@ -30,28 +31,15 @@ public class UserService {
     }
 
     public UserResponse getCurrentUser() {
-        User currentUser = authenticationService
-                .getAuthenticatedUser()
-                .orElseThrow(
-                        () -> BusinessExceptions.ACCOUNT_MISSING
-                );
+        User currentUser = authenticationService.getAuthenticatedUser();
         return userMapper.toResponse(currentUser);
     }
 
     public List<UserResponse> getUsers() {
-        assertCurrentUserRole(UserRole.ADMIN);
+        userRoleService.assertCurrentUserRole(UserRole.ADMIN);
         List<User> users = userRepository.findAll();
         return users.stream()
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
-    }
-
-    public void assertCurrentUserRole(UserRole userRole) {
-        User currentUser = authenticationService
-                .getAuthenticatedUser()
-                .orElseThrow(
-                        () -> BusinessExceptions.ACCOUNT_MISSING
-                );
-        if (!currentUser.getUserRole().equals(userRole)) throw BusinessExceptions.AUTHORIZATION_MISSING;
     }
 }

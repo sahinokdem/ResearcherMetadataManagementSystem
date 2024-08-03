@@ -65,7 +65,7 @@ public class AuthenticationService {
         );
     }
 
-    public Optional<User> getAuthenticatedUser() {
+    public Optional<User> getAuthenticatedUserOptional() {
         String principal = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal.equals("anonymousUser")) {
@@ -73,5 +73,12 @@ public class AuthenticationService {
         }
 
         return userRepository.findById(principal);
+    }
+
+    public User getAuthenticatedUser() {
+        return getAuthenticatedUserOptional()
+                .orElseThrow(
+                        () -> BusinessExceptions.ACCOUNT_MISSING
+                );
     }
 }

@@ -1,15 +1,14 @@
 package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.MetadataRegistry;
+import com.sahinokdem.researcher_metadata.enums.EducationDegree;
 import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
+import com.sahinokdem.researcher_metadata.enums.ResearchField;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -23,7 +22,9 @@ public class MetadataRegistryTypeService {
     }
 
     public void assertValueIsValid(String metadataRegistryId, String value) {
-        MetadataRegistryType metadataRegistryType = getType(metadataRegistryId);
+        MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
+                () -> BusinessExceptions.REGISTRY_NOT_FOUND);
+        MetadataRegistryType metadataRegistryType = metadataRegistry.getType();
         switch (metadataRegistryType) {
             case STRING:
                 assertValueIsString(value);
@@ -42,15 +43,8 @@ public class MetadataRegistryTypeService {
         }
     }
 
-    private MetadataRegistryType getType(String metadataRegistryId) {
-        MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
-                () -> BusinessExceptions.REGISTRY_NOT_FOUND
-        );
-        return metadataRegistry.getType();
-    }
-
     private void assertValueIsString(String value) {
-        if (value.matches(".*\\d.*")) throw BusinessExceptions.METADATA_VALUE_INVALID;
+        if (value.isBlank()) throw BusinessExceptions.METADATA_VALUE_INVALID;
     }
 
     private void assertValueIsPositiveInteger(String value) {
@@ -63,19 +57,17 @@ public class MetadataRegistryTypeService {
     }
 
     private void assertValueIsEducationDegree(String value) {
-        Set<String> validDegrees = new HashSet<>(Arrays.asList
-                ("HIGH_SCHOOL", "ASSOCIATE", "BACHELOR", "MASTER", "DOCTORATE", "POSTDOCTORAL"));
-        if (!validDegrees.contains(value.toUpperCase())) {
+        try {
+            EducationDegree.valueOf(value.toUpperCase(Locale.ENGLISH));
+        } catch (IllegalArgumentException e) {
             throw BusinessExceptions.METADATA_VALUE_INVALID;
         }
     }
 
     private void assertValueIsResearchField(String value) {
-        Set<String> validFields = new HashSet<>(Arrays.asList(
-                "COMPUTER SCIENCE", "PHYSICS", "CHEMISTRY", "BIOLOGY",
-                "MATHEMATICS", "PSYCHOLOGY", "SOCIOLOGY", "ECONOMICS", "HISTORY", "LITERATURE"
-        ));
-        if (!validFields.contains(value.toUpperCase())) {
+        try {
+            ResearchField.valueOf(value.toUpperCase(Locale.ENGLISH));
+        } catch (IllegalArgumentException e) {
             throw BusinessExceptions.METADATA_VALUE_INVALID;
         }
     }

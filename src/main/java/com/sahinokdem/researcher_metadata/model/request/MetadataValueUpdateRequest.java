@@ -4,11 +4,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class MetadataValueRequest {
-    @NotEmpty
-    private final String userId;
-    @NotEmpty
-    private final String registryId;
+public class MetadataValueUpdateRequest {
     @NotEmpty
     private final String value;
 }

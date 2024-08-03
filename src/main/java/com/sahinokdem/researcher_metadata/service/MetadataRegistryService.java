@@ -18,19 +18,20 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class MetadataRegistryService {
 
-    private final UserService userService;
+    private final UserRoleService userRoleService;
     private final MetadataRegistryMapper metadataRegistryMapper;
     private final MetadataRegistryRepository metadataRegistryRepository;
 
+
     public MetadataRegistryResponse addMetadataRegistry(MetadataRegistryRequest request) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataRegistry metadataRegistry = metadataRegistryMapper.toEntity(request);
         metadataRegistryRepository.save(metadataRegistry);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
 
     public MetadataRegistryResponse updateMetadataRegistry(String metadataRegistryId, MetadataRegistryRequest request) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
                 ()-> BusinessExceptions.REGISTRY_NOT_FOUND);
         MetadataRegistry updatedMetadataRegistry = metadataRegistryMapper.toEntity(request, metadataRegistry);
@@ -39,19 +40,19 @@ public class MetadataRegistryService {
     }
 
     public void deleteMetadataRegistry(String metadataRegistryId) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         metadataRegistryRepository.deleteById(metadataRegistryId);
     }
 
     public MetadataRegistryResponse getMetadataRegistry(String metadataRegistryId) {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         MetadataRegistry metadataRegistry = metadataRegistryRepository.findById(metadataRegistryId).orElseThrow(
                 () -> BusinessExceptions.REGISTRY_NOT_FOUND);
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
 
     public List<MetadataRegistryResponse> getAllMetadataRegistries() {
-        userService.assertCurrentUserRole(UserRole.EDITOR);
+        userRoleService.assertCurrentUserRole(UserRole.EDITOR);
         List<MetadataRegistry> metadataRegistries = metadataRegistryRepository.findAll();
         return metadataRegistries.stream()
                 .map(metadataRegistryMapper::toResponse)
