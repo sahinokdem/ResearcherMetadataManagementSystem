@@ -4,6 +4,8 @@ import com.sahinokdem.researcher_metadata.TokenService;
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.exception.ErrorDto;
+import com.sahinokdem.researcher_metadata.model.request.MetadataValueCreateRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataValueUpdateRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
 import com.sahinokdem.researcher_metadata.repository.MetadataValueRepository;
@@ -322,6 +324,246 @@ public class MetadataValueControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
+    @Test
+    public void given_EditorUser_when_AddValue_then_StatusOk_and_ValueReturned() {
+        // GIVEN
+        String userId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a";
+        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
+        String value = "new_value";
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String editorToken = tokenService.getTokenFor(user);
+        MetadataValueCreateRequest request = new MetadataValueCreateRequest(userId, registryId, value);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + editorToken);
+        HttpEntity<MetadataValueCreateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<MetadataValueResponse> response = restTemplate.exchange(
+                "/metadata-value/add", HttpMethod.POST, requestEntity, MetadataValueResponse.class);
+        // THEN
+        assertAll(
+                "Editor user should be able to add a new value",
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 200 Ok"),
+                () -> assertNotNull(response.getBody(), "Value response should not be null"),
+                () -> assertEquals(userId, response.getBody().getUserId(), "Created value's userId should match the request"),
+                () -> assertEquals(registryId, response.getBody().getRegistryId(), "Created value's registryId should match the request"),
+                () -> assertEquals(value, response.getBody().getValue(), "Created value should match the request")
+        );
+    }
 
+    @Test
+    public void given_AdminUser_when_AddValue_then_Forbidden() {
+        // GIVEN
+        String userId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a";
+        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
+        String value = "new_value";
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String adminToken = tokenService.getTokenFor(user);
+        MetadataValueCreateRequest request = new MetadataValueCreateRequest(userId, registryId, value);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<MetadataValueCreateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/add", HttpMethod.POST, requestEntity, ErrorDto.class);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
 
+    @Test
+    public void given_HRSpecialistUser_when_AddValue_then_Forbidden() {
+        // GIVEN
+        String userId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a";
+        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
+        String value = "new_value";
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String hrSpecialistToken = tokenService.getTokenFor(user);
+        MetadataValueCreateRequest request = new MetadataValueCreateRequest(userId, registryId, value);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + hrSpecialistToken);
+        HttpEntity<MetadataValueCreateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/add", HttpMethod.POST, requestEntity, ErrorDto.class);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_ResearcherUser_when_AddValue_then_Forbidden() {
+        // GIVEN
+        String userId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a";
+        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
+        String value = "new_value";
+        User user = userRepository.findByEmail("researcher@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String researcherToken = tokenService.getTokenFor(user);
+        MetadataValueCreateRequest request = new MetadataValueCreateRequest(userId, registryId, value);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + researcherToken);
+        HttpEntity<MetadataValueCreateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/add", HttpMethod.POST, requestEntity, ErrorDto.class);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_EditorUser_when_UpdateExistingValue_then_StatusOk_and_UpdatedValueReturned() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        String updatedValue = "updated_value";
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String editorToken = tokenService.getTokenFor(user);
+        MetadataValueUpdateRequest request = new MetadataValueUpdateRequest(updatedValue);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + editorToken);
+        HttpEntity<MetadataValueUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<MetadataValueResponse> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.PUT, requestEntity, MetadataValueResponse.class, valueId);
+        // THEN
+        assertAll(
+                "Editor user should be able to update an existing value",
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 200 OK"),
+                () -> assertNotNull(response.getBody(), "Value response should not be null"),
+                () -> assertEquals(valueId, response.getBody().getId(), "Updated value ID should match the requested ID"),
+                () -> assertEquals(updatedValue, response.getBody().getValue(), "Updated value should match the request")
+        );
+    }
+
+    @Test
+    public void given_AdminUser_when_UpdateExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        String updatedValue = "updated_value_by_admin";
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided")
+        );
+        String adminToken = tokenService.getTokenFor(user);
+        MetadataValueUpdateRequest request = new MetadataValueUpdateRequest(updatedValue);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<MetadataValueUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_HRSpecialistUser_when_UpdateExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        String updatedValue = "updated_value_by_hr";
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String hrSpecialistToken = tokenService.getTokenFor(user);
+        MetadataValueUpdateRequest request = new MetadataValueUpdateRequest(updatedValue);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + hrSpecialistToken);
+        HttpEntity<MetadataValueUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_ResearcherUser_when_UpdateExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        String updatedValue = "updated_value_by_researcher";
+        User user = userRepository.findByEmail("researcher@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String researcherToken = tokenService.getTokenFor(user);
+        MetadataValueUpdateRequest request = new MetadataValueUpdateRequest(updatedValue);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + researcherToken);
+        HttpEntity<MetadataValueUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_EditorUser_when_DeleteExistingValue_then_StatusOk() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        User user = userRepository.findByEmail("editor@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String editorToken = tokenService.getTokenFor(user);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + editorToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<Void> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.DELETE, requestEntity, Void.class, valueId);
+        // THEN
+        assertAll(
+                "Editor user should be able to delete an existing value",
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 200 Ok")
+        );
+    }
+
+    @Test
+    public void given_AdminUser_when_DeleteExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String adminToken = tokenService.getTokenFor(user);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + adminToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_HRSpecialistUser_when_DeleteExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String hrSpecialistToken = tokenService.getTokenFor(user);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + hrSpecialistToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    @Test
+    public void given_ResearcherUser_when_DeleteExistingValue_then_Forbidden() {
+        // GIVEN
+        String valueId = metadataValueRepository.findAll().get(0).getId();
+        User user = userRepository.findByEmail("researcher@test.com").orElseThrow(
+                () -> new RuntimeException("Invalid Test Data Provided"));
+        String researcherToken = tokenService.getTokenFor(user);
+        // WHEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + researcherToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
 }
