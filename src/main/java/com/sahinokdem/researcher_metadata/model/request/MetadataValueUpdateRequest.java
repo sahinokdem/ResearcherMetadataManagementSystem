@@ -7,7 +7,7 @@ import javax.validation.constraints.NotEmpty;
 
 @Data
 public class MetadataValueUpdateRequest {
-    @NotEmpty(message = "")
+    @NotEmpty
     private final String value;
 
     @JsonCreator
