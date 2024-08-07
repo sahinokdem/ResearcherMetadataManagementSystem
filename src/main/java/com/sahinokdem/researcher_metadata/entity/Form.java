@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -17,7 +19,8 @@ import java.util.Date;
 public class Form extends BaseEntity {
     private String nameAndSurname;
     private String email;
-    private Date dateOfBirth;
+
+    private LocalDate dateOfBirth;
     private String externalApiId;
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private User user;
