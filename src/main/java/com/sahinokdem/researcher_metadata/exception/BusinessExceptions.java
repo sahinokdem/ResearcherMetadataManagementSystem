@@ -17,4 +17,5 @@ public class BusinessExceptions {
     public static BusinessException REGISTRY_TYPE_NOT_FOUND = new BusinessException(ErrorCode.internal_error, "Registry type not found");
     public static BusinessException NON_RESEARCHER_WITH_METADATA  = new BusinessException(ErrorCode.internal_error, "User is not researcher and has metadata");
     public static BusinessException METADATA_VALUE_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Metadata value not found");
+    public static BusinessException FORM_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Form not found");
 }

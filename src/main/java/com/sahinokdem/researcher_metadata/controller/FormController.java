@@ -21,6 +21,11 @@ public class FormController {
         return formService.getAllForms();
     }
 
+    @GetMapping("{formId}")
+    public FormResponse getForm(@PathVariable String formId) {
+        return formService.getForm(formId);
+    }
+
     @PostMapping("/send")
     public FormResponse sendForm(@Valid @RequestBody FormRequest formRequest) {
         return formService.sendForm(formRequest);

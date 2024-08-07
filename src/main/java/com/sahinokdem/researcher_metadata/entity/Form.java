@@ -19,10 +19,9 @@ import java.util.Date;
 public class Form extends BaseEntity {
     private String nameAndSurname;
     private String email;
-
     private LocalDate dateOfBirth;
     private String externalApiId;
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private User user;
+    private User owner;
     private FormAndCvResult result;
 }
