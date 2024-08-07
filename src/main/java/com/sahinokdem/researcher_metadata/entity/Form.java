@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "form")
@@ -17,7 +17,9 @@ import javax.persistence.Table;
 public class Form extends BaseEntity {
     private String nameAndSurname;
     private String email;
+    private Date dateOfBirth;
     private String externalApiId;
-    private String userId;
+    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private User user;
     private FormAndCvResult result;
 }
