@@ -10,6 +10,9 @@ import com.sahinokdem.researcher_metadata.repository.FormRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class FormService {
@@ -18,6 +21,15 @@ public class FormService {
     private final FormMapper formMapper;
     private final AuthenticationService authenticationService;
     private final FormRepository formRepository;
+
+
+    public List<FormResponse> getAllForms() {
+        userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
+        List<Form> forms = formRepository.findAll();
+        return forms.stream()
+                .map(formMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 
     public FormResponse sendForm(FormRequest formRequest) {
         userRoleService.assertCurrentUserRole(UserRole.JOP_APPLICANT);
