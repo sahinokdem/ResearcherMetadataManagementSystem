@@ -6,12 +6,19 @@ import com.sahinokdem.researcher_metadata.service.CVService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/cv")
 @AllArgsConstructor
 public class CVController {
 
     private final CVService cvService;
+
+    @GetMapping
+    public List<CVResponse> getAllCVInfos() {
+        return cvService.getAllCVInfos();
+    }
 
     @GetMapping("{cvId}")
     public CVResponse getCVInfo(@PathVariable String cvId) {
