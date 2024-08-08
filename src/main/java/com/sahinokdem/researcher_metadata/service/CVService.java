@@ -20,9 +20,16 @@ public class CVService {
     private final FileService fileService;
     private final UserRoleService userRoleService;
     private final AuthenticationService authenticationService;
+    private final EntityAccessService entityAccessService;
     private final CVMapper cvMapper;
     private final FileInfoRepository fileInfoRepository;
     private final CVInfoRepository cvInfoRepository;
+
+    public CVResponse getCVInfo(String cvId) {
+        CVInfo cvInfo = entityAccessService.getEntity(cvId, cvInfoRepository, UserRole.JOP_APPLICANT,
+                UserRole.HR_SPECIALIST, BusinessExceptions.CV_NOT_FOUND);
+        return cvMapper.toResponse(cvInfo);
+    }
 
     public CVResponse associateCVFile(String fileId, CVRequest cvRequest) {
         userRoleService.assertCurrentUserRole(UserRole.JOP_APPLICANT);

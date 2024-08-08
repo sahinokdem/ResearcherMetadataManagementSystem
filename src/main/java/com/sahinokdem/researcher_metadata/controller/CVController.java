@@ -10,7 +10,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/cv")
 @AllArgsConstructor
 public class CVController {
+
     private final CVService cvService;
+
+    @GetMapping("{cvId}")
+    public CVResponse getCVInfo(@PathVariable String cvId) {
+        return cvService.getCVInfo(cvId);
+    }
 
     @PostMapping("/{fileId}/associate")
     public CVResponse associateCVFile(@PathVariable String fileId, @RequestBody CVRequest cvRequest) {
