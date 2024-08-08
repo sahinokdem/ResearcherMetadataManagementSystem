@@ -9,5 +9,5 @@ public class CVResponse {
     private final String fileId;
     private final String name;
     private final String cvAssociation;
-    private FormAndCvResult result;
+    private final FormAndCvResult result;
 }

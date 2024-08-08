@@ -25,7 +25,8 @@ public class CVMapper {
                 cvInfo.getId(),
                 cvInfo.getFileInfo().getId(),
                 cvInfo.getFileInfo().getName(),
-                cvInfo.getCvAssociation()
+                cvInfo.getCvAssociation(),
+                cvInfo.getResult()
         );
     }
 }
