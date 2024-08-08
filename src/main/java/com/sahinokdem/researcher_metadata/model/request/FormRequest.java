@@ -2,12 +2,9 @@ package com.sahinokdem.researcher_metadata.model.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 public class FormRequest {
