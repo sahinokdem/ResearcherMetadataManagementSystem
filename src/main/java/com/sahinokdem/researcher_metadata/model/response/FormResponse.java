@@ -7,4 +7,5 @@ import lombok.Data;
 public class FormResponse {
     private final String id;
     private final FormAndCvResult result;
+    private final String reason;
 }

@@ -10,4 +10,5 @@ public class CVResponse {
     private final String name;
     private final String cvAssociation;
     private final FormAndCvResult result;
+    private final String reason;
 }

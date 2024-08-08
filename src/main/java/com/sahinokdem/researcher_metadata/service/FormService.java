@@ -8,6 +8,7 @@ import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.mapper.FormMapper;
 import com.sahinokdem.researcher_metadata.model.request.FormRequest;
+import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
 import com.sahinokdem.researcher_metadata.repository.FormRepository;
 import lombok.AllArgsConstructor;
@@ -48,21 +49,12 @@ public class FormService {
         return formMapper.toResponse(form);
     }
 
-    public FormResponse applyForm(String formId) {
+    public FormResponse applyForm(String formId, ReviewRequest request) {
         userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
         Form form = formRepository.findById(formId).orElseThrow(
                 () -> BusinessExceptions.FORM_NOT_FOUND);
-        form.setResult(FormAndCvResult.ACCEPTED);
-        formRepository.save(form);
-        return formMapper.toResponse(form);
-    }
-
-    public FormResponse denyForm(String formId) {
-        userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
-        Form form = formRepository.findById(formId).orElseThrow(
-                () -> BusinessExceptions.FORM_NOT_FOUND);
-        form.setResult(FormAndCvResult.REJECTED);
-        formRepository.save(form);
-        return formMapper.toResponse(form);
+        Form reviewedForm = formMapper.toEntity(form, request);
+        formRepository.save(reviewedForm);
+        return formMapper.toResponse(reviewedForm);
     }
 }

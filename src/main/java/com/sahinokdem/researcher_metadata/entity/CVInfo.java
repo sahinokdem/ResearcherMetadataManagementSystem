@@ -22,4 +22,5 @@ public class CVInfo extends BaseEntity {
     private User owner;
     private String cvAssociation;
     private FormAndCvResult result;
+    private String reason;
 }

@@ -1,6 +1,7 @@
 package com.sahinokdem.researcher_metadata.controller;
 
 import com.sahinokdem.researcher_metadata.model.request.CVRequest;
+import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
 import com.sahinokdem.researcher_metadata.service.CVService;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,10 @@ public class CVController {
     @PostMapping("/{fileId}/associate")
     public CVResponse associateCVFile(@PathVariable String fileId, @RequestBody CVRequest cvRequest) {
         return cvService.associateCVFile(fileId, cvRequest);
+    }
+
+    @PutMapping("/{cvId}/review")
+    public CVResponse reviewCV(@PathVariable String cvId, @RequestBody ReviewRequest cvRequest) {
+        return cvService.reviewCV(cvId, cvRequest);
     }
 }

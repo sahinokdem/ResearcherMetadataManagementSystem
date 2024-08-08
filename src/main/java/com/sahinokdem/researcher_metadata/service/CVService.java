@@ -7,12 +7,12 @@ import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.mapper.CVMapper;
 import com.sahinokdem.researcher_metadata.model.request.CVRequest;
+import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
 import com.sahinokdem.researcher_metadata.repository.CVInfoRepository;
 import com.sahinokdem.researcher_metadata.repository.FileInfoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class CVService {
 
-    private final FileService fileService;
     private final UserRoleService userRoleService;
     private final AuthenticationService authenticationService;
     private final EntityAccessService entityAccessService;
@@ -50,5 +49,14 @@ public class CVService {
         CVInfo cvInfo = cvMapper.toEntity(owner, fileInfo, cvRequest);
         cvInfoRepository.save(cvInfo);
         return cvMapper.toResponse(cvInfo);
+    }
+
+    public CVResponse reviewCV(String cvId, ReviewRequest request) {
+        userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
+        CVInfo cvInfo = cvInfoRepository.findById(cvId).orElseThrow(
+                () -> BusinessExceptions.CV_NOT_FOUND);
+        CVInfo reviewedCvInfo = cvMapper.toEntity(cvInfo, request);
+        cvInfoRepository.save(reviewedCvInfo);
+        return cvMapper.toResponse(reviewedCvInfo);
     }
 }

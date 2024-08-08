@@ -24,4 +24,5 @@ public class Form extends BaseEntity {
     @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private User owner;
     private FormAndCvResult result;
+    private String reason;
 }

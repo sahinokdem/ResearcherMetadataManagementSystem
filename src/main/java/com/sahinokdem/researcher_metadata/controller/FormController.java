@@ -1,6 +1,7 @@
 package com.sahinokdem.researcher_metadata.controller;
 
 import com.sahinokdem.researcher_metadata.model.request.FormRequest;
+import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
 import com.sahinokdem.researcher_metadata.service.FormService;
 import lombok.AllArgsConstructor;
@@ -30,13 +31,8 @@ public class FormController {
         return formService.sendForm(formRequest);
     }
 
-    @PutMapping("{formId}/apply")
-    public FormResponse applyForm(@PathVariable String formId) {
-        return formService.applyForm(formId);
-    }
-
-    @PutMapping("{formId}/deny")
-    public FormResponse denyForm(@PathVariable String formId) {
-        return formService.denyForm(formId);
+    @PutMapping("{formId}/review")
+    public FormResponse reviewForm(@PathVariable String formId, @RequestBody ReviewRequest reviewRequest) {
+        return formService.applyForm(formId, reviewRequest);
     }
 }
