@@ -33,6 +33,6 @@ public class FormController {
 
     @PutMapping("{formId}/review")
     public FormResponse reviewForm(@PathVariable String formId, @RequestBody ReviewRequest reviewRequest) {
-        return formService.applyForm(formId, reviewRequest);
+        return formService.reviewForm(formId, reviewRequest);
     }
 }

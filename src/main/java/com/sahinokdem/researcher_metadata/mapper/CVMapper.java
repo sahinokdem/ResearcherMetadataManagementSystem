@@ -3,7 +3,7 @@ package com.sahinokdem.researcher_metadata.mapper;
 import com.sahinokdem.researcher_metadata.entity.CVInfo;
 import com.sahinokdem.researcher_metadata.entity.FileInfo;
 import com.sahinokdem.researcher_metadata.entity.User;
-import com.sahinokdem.researcher_metadata.enums.FormAndCvResult;
+import com.sahinokdem.researcher_metadata.enums.Result;
 import com.sahinokdem.researcher_metadata.model.request.CVRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
@@ -13,18 +13,18 @@ import org.springframework.stereotype.Service;
 public class CVMapper {
 
     public CVInfo toEntity(User owner, FileInfo fileInfo, CVRequest request) {
-        return new CVInfo(
+        CVInfo cvInfo = new CVInfo(
                 fileInfo,
-                owner,
-                request.getCvAssociation(),
-                FormAndCvResult.WAITING_FOR_ACCEPTANCE,
-                "Your cv associated, waiting for HR review"
-        );
+                request.getCvAssociation());
+        cvInfo.setOwner(owner);
+        cvInfo.setResult(Result.WAITING_FOR_ACCEPTANCE);
+        cvInfo.setReason("Your cv associated, waiting for HR review");
+        return cvInfo;
     }
 
     public CVInfo toEntity(CVInfo cvInfo, ReviewRequest request) {
-        if (request.isAccepted()) cvInfo.setResult(FormAndCvResult.ACCEPTED);
-        else cvInfo.setResult(FormAndCvResult.REJECTED);
+        if (request.isAccepted()) cvInfo.setResult(Result.ACCEPTED);
+        else cvInfo.setResult(Result.REJECTED);
         cvInfo.setReason(request.getReason());
         return cvInfo;
     }

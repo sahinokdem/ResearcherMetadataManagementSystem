@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface EntityWithOwnerRepository<T> extends JpaRepository<T, String> {
      Optional<T> findByOwnerAndId(User owner, String id);
      List<T> findAllByOwner(User owner);
+     Optional<T> findByOwner(User owner);
+     void deleteAllByOwner(User owner);
+     void deleteByOwner(User owner);
 }

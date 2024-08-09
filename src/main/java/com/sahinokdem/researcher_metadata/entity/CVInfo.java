@@ -1,6 +1,6 @@
 package com.sahinokdem.researcher_metadata.entity;
 
-import com.sahinokdem.researcher_metadata.enums.FormAndCvResult;
+import com.sahinokdem.researcher_metadata.enums.Result;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +15,8 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CVInfo extends BaseEntity {
+public class CVInfo extends ApplicationEntity {
     @OneToOne
     private FileInfo fileInfo;
-    @OneToOne
-    private User owner;
     private String cvAssociation;
-    private FormAndCvResult result;
-    private String reason;
 }

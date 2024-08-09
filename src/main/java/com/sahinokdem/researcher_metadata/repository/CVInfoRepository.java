@@ -4,6 +4,6 @@ import com.sahinokdem.researcher_metadata.entity.CVInfo;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CVInfoRepository extends EntityWithOwnerRepository<CVInfo> {
+public interface CVInfoRepository extends ApplicationEntityRepository<CVInfo> {
 
 }

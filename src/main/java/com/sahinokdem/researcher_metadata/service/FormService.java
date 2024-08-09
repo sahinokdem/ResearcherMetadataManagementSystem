@@ -1,9 +1,7 @@
 package com.sahinokdem.researcher_metadata.service;
 
 import com.sahinokdem.researcher_metadata.entity.Form;
-import com.sahinokdem.researcher_metadata.entity.MetadataValue;
 import com.sahinokdem.researcher_metadata.entity.User;
-import com.sahinokdem.researcher_metadata.enums.FormAndCvResult;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.mapper.FormMapper;
@@ -24,6 +22,7 @@ public class FormService {
     private final UserRoleService userRoleService;
     private final FormMapper formMapper;
     private final AuthenticationService authenticationService;
+    private final JobApplicationService jobApplicationService;
     private final EntityAccessService entityAccessService;
     private final FormRepository formRepository;
 
@@ -44,12 +43,13 @@ public class FormService {
     public FormResponse sendForm(FormRequest formRequest) {
         userRoleService.assertCurrentUserRole(UserRole.JOP_APPLICANT);
         User user = authenticationService.getAuthenticatedUser();
+        jobApplicationService.readyToFormSend(user);
         Form form = formMapper.toEntity(user, formRequest);
         formRepository.save(form);
         return formMapper.toResponse(form);
     }
 
-    public FormResponse applyForm(String formId, ReviewRequest request) {
+    public FormResponse reviewForm(String formId, ReviewRequest request) {
         userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
         Form form = formRepository.findById(formId).orElseThrow(
                 () -> BusinessExceptions.FORM_NOT_FOUND);

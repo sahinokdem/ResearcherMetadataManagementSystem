@@ -2,7 +2,7 @@ package com.sahinokdem.researcher_metadata.mapper;
 
 import com.sahinokdem.researcher_metadata.entity.Form;
 import com.sahinokdem.researcher_metadata.entity.User;
-import com.sahinokdem.researcher_metadata.enums.FormAndCvResult;
+import com.sahinokdem.researcher_metadata.enums.Result;
 import com.sahinokdem.researcher_metadata.model.request.FormRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
@@ -22,20 +22,20 @@ public class FormMapper {
     }
 
     public Form toEntity(User user, FormRequest request) {
-        return new Form(
+        Form form = new Form(
                 request.getNameAndSurname(),
                 request.getEmail(),
                 request.getDateOfBirth(),
-                request.getExternalApiId(),
-                user,
-                FormAndCvResult.WAITING_FOR_ACCEPTANCE,
-                "Your form sent, waiting for HR review"
-        );
+                request.getExternalApiId());
+        form.setOwner(user);
+        form.setResult(Result.WAITING_FOR_ACCEPTANCE);
+        form.setReason("Your form sent, waiting for HR review");
+        return form;
     }
 
     public Form toEntity(Form form, ReviewRequest request) {
-        if (request.isAccepted()) form.setResult(FormAndCvResult.ACCEPTED);
-        else form.setResult(FormAndCvResult.REJECTED);
+        if (request.isAccepted()) form.setResult(Result.ACCEPTED);
+        else form.setResult(Result.REJECTED);
         form.setReason(request.getReason());
         return form;
     }
