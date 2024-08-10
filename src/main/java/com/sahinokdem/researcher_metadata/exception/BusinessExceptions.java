@@ -20,6 +20,6 @@ public class BusinessExceptions {
     public static BusinessException FORM_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Form not found");
     public static BusinessException CV_NOT_FOUND = new BusinessException(ErrorCode.not_found, "CV not found");
     public static BusinessException WAITING_APPLICATION_EXIST = new BusinessException(ErrorCode.already_submitted, "Waiting application already exists");
-    public static BusinessException FORM_ACCEPTED = new BusinessException(ErrorCode.forbidden, "Previous form already accepted");
+    public static BusinessException APPLICATION_ACCEPTED = new BusinessException(ErrorCode.forbidden, "Previous application already accepted");
     public static BusinessException APPLICATION_PENALTY = new BusinessException(ErrorCode.forbidden, "Penalty to apply action has not finished");
 }
