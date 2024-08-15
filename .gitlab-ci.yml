@@ -1,0 +1,31 @@
+stages:
+  - test
+  - deploy
+
+test-all:
+  stage: test
+  except:
+    - master
+  script:
+    - mvn clean install
+
+test-unit:
+  stage: test
+  only:
+    - master
+  script:
+    - mvn clean package
+    - cp target/researcher-metadata-management-system*.jar researcher-metadata-management-system-${CI_COMMIT_SHA}.jar
+  artifacts:
+    name: researcher-metadata-management-system
+    expire_in: 1 week
+    paths:
+      - researcher-metadata-management-system-${CI_COMMIT_SHA}.jar
+
+deploy:
+  stage: deploy
+  needs: [test-unit]
+  only:
+    - master
+  script:
+    - ls researcher-metadata-management-system*.jar
