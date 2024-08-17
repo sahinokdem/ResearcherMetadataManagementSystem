@@ -123,6 +123,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>researcher-metadata-management-system</finalName>
     </build>
-
 </project>
