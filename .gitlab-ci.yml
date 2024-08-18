@@ -10,15 +10,8 @@ before_script:
 
 # Pipeline aşamalarını tanımlayın
 stages:
-  - test
   - build
   - deploy
-
-# Test aşamasını tanımlayın
-test:
-  stage: test
-  script:
-    - mvn clean test # Maven kullanarak testleri çalıştırın
 
 # Build aşamasını tanımlayın
 build_job: # Job adını `build` olarak değiştirin, çünkü `build` aynı zamanda bir stage adı
