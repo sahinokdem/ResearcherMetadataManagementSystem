@@ -16,9 +16,10 @@ stages:
 # Build aşamasını tanımlayın
 build_job: # Job adını `build` olarak değiştirin, çünkü `build` aynı zamanda bir stage adı
   stage: build
+  before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - echo "Building the application..."
-    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA . # Docker imajını oluşturun
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA # Docker imajını GitLab Container Registry'sine yükleyin
 
