@@ -11,7 +11,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - SWAGGER_URL=${SWAGGER_URL}
-      - STORAGE_PATH=/app/uploads
+      - STORAGE_PATH=${STORAGE_PATH}
       - SHORT_DAYS=${SHORT_DAYS}
       - LONG_DAYS=${LONG_DAYS}
     volumes:

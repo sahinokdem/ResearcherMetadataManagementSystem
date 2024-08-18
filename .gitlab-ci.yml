@@ -1,31 +1,38 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - docker info
+
 stages:
   - test
+  - build
   - deploy
 
-test-all:
+test:
   stage: test
-  except:
-    - master
   script:
-    - mvn clean install
+    - mvn clean test
 
-test-unit:
-  stage: test
-  only:
-    - master
-  script:
-    - mvn clean package
-    - cp target/researcher-metadata-management-system*.jar researcher-metadata-management-system-${CI_COMMIT_SHA}.jar
-  artifacts:
-    name: researcher-metadata-management-system
-    expire_in: 1 week
-    paths:
-      - researcher-metadata-management-system-${CI_COMMIT_SHA}.jar
+build_job:
+  stage: build
+  script: |
+    echo "Building the application..."
+    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 deploy:
   stage: deploy
-  needs: [test-unit]
+  tags:
+    - ec2-runner
   only:
-    - master
-  script:
-    - ls researcher-metadata-management-system*.jar
+    - feature/ci-cd
+  script: |
+    echo "Deploying the application..."
+    - $env:DOCKER_COMPOSE_CONTENT = Get-Content .dev/docker-compose.template.yml 
+    - $expandedContent = $env:DOCKER_COMPOSE_CONTENT | Expand-String 
+    - $expandedContent | Out-File docker-compose.yml 
+    - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~ 
+    - ssh -i ${SSH_PRIVATE_KEY} ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
