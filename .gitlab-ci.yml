@@ -17,11 +17,11 @@ test:
 
 build_job:
   stage: build
-  script: |
-    echo "Building the application..."
-    docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  script:
+    - echo "Building the application..."
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
 deploy:
   stage: deploy
@@ -29,8 +29,12 @@ deploy:
     - ec2-runner
   only:
     - feature/ci-cd
-  script: |
-    echo "Deploying the application..."
+  script:
+    - echo "Deploying the application..."
+    - Get-Content .\src\.env | Foreach-Object {
+        - $key, $value = $_ -split '=', 2
+        - $env:$key = $value
+    }
     - $env:DOCKER_COMPOSE_CONTENT = Get-Content .dev/docker-compose.template.yml 
     - $expandedContent = $env:DOCKER_COMPOSE_CONTENT | Expand-String 
     - $expandedContent | Out-File docker-compose.yml 
