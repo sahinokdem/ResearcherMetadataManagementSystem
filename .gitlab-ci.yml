@@ -1,28 +1,35 @@
+# Varsayılan Docker imajını ve servislerini tanımlayın
 default:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
-  before_script:
-    - docker info
 
+# Her işten önce çalıştırılacak komutları tanımlayın
+before_script:
+  - docker info
+
+# Pipeline aşamalarını tanımlayın
 stages:
   - test
   - build
   - deploy
 
+# Test aşamasını tanımlayın
 test:
   stage: test
   script:
-    - mvn clean test
+    - mvn clean test # Maven kullanarak testleri çalıştırın
 
-build_job:
+# Build aşamasını tanımlayın
+build_job: # Job adını `build` olarak değiştirin, çünkü `build` aynı zamanda bir stage adı
   stage: build
   script:
     - echo "Building the application..."
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA . # Docker imajını oluşturun
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA # Docker imajını GitLab Container Registry'sine yükleyin
 
+# Deploy aşamasını tanımlayın
 deploy:
   stage: deploy
   tags:
@@ -32,11 +39,14 @@ deploy:
   script:
     - echo "Deploying the application..."
     - Get-Content .\src\.env | Foreach-Object {
-        - $key, $value = $_ -split '=', 2
-        - $env:$key = $value
-    }
-    - $env:DOCKER_COMPOSE_CONTENT = Get-Content .dev/docker-compose.template.yml 
-    - $expandedContent = $env:DOCKER_COMPOSE_CONTENT | Expand-String 
-    - $expandedContent | Out-File docker-compose.yml 
-    - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~ 
+      - $key, $value = $_ -split '=', 2
+      - $env:$key = $value
+      }
+    - $env:DOCKER_COMPOSE_CONTENT = Get-Content .dev/docker-compose.template.yml
+    - $expandedContent = $env:DOCKER_COMPOSE_CONTENT | Expand-String
+    - $expandedContent | Out-File docker-compose.yml
+    - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
     - ssh -i ${SSH_PRIVATE_KEY} ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
+  environment:
+    name: production
+    url: http://${REMOTE_HOST}:8085
