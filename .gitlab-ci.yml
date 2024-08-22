@@ -19,8 +19,6 @@ deploy_job:
     - chmod 644 ~/.ssh/known_hosts
   script:
     - echo "Deploying the application..."
-    - apk add gettext
-    - ls -lah -R
     - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
     - scp docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
     - ssh ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
