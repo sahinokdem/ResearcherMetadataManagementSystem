@@ -15,13 +15,22 @@ deploy_job:
   stage: deploy
   only:
     - feature/ci-cd
+  before_script:
+    - apt update
+    - apt install --no-install-recommends -y openssh-client gettext-base
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $REMOTE_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - echo "Deploying the application..."
     - apk add gettext
     - ls -lah -R
     - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
-    - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
-    - ssh -i ${SSH_PRIVATE_KEY} ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
+    - scp docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
+    - ssh ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
   environment:
     name: production
     url: http://${REMOTE_HOST}:8085
