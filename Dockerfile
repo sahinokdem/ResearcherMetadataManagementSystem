@@ -1,5 +1,5 @@
 #Stage 1 Build with maven
-FROM maven:3.9.3-openjdk-17-slim as build
+FROM eclipse/ubuntu_jdk8_x11 as build
 WORKDIR /app
 COPY pom.xml .
 COPY . .
