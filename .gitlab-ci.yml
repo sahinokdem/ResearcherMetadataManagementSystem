@@ -18,6 +18,7 @@ deploy_job:
   script:
     - echo "Deploying the application..."
     - apk add gettext
+    - ls
     - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
     - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
     - ssh -i ${SSH_PRIVATE_KEY} ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
