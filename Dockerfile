@@ -3,7 +3,7 @@ FROM eclipse/ubuntu_jdk8_x11 as build
 WORKDIR /app
 COPY pom.xml .
 COPY . .
-RUN mvn clean package -DskipTests
+RUN mvn -X clean package -DskipTests
 
 #Stage 2 Creating image
 FROM eclipse-temurin:8-jdk-alpine
