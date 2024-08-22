@@ -14,21 +14,8 @@ services:
       - STORAGE_PATH=${STORAGE_PATH}
       - SHORT_DAYS=${SHORT_DAYS}
       - LONG_DAYS=${LONG_DAYS}
-    volumes:
-      - app-uploads:${STORAGE_PATH}
-    depends_on:
-      - db
+#    volumes:
+#      - app-uploads:${STORAGE_PATH}
 
-  db:
-    image: postgres:latest
-    container_name: researcher-metadata-management-system-db
-    environment:
-      - DB_URL=${DB_URL}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-volumes:
-  postgres-data:
-  app-uploads:
+#volumes:
+#  app-uploads:

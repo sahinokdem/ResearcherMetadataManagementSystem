@@ -1,0 +1,19 @@
+version: '3'
+services:
+  app:
+    container_name: researcher-metadata-management-system
+    ports:
+      - "8085:8085"
+    environment:
+      - DB_URL=jdbc:postgresql://127.0.0.1:5432/researcher_metadata
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - JWT_SECRET=CAt5ENACaLfAF3CHUY3s+e$*6gEvesW5WaSyA*0AducHa0aGaTRe=-othADi8ah-
+      - SWAGGER_URL=
+      - STORAGE_PATH=C:\Users\sahin\Desktop\javaCalisma\cdn
+      - SHORT_DAYS=7
+      - LONG_DAYS=365
+    build: .
+
+volumes:
+  app-uploads:
