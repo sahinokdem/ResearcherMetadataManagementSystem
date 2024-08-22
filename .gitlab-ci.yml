@@ -1,30 +1,26 @@
-# Varsayılan Docker imajını ve servislerini tanımlayın
+
 default:
   image: docker:24.0.5
   services:
     - docker:24.0.5-dind
 
-# Her işten önce çalıştırılacak komutları tanımlayın
 before_script:
   - docker info
 
-# Pipeline aşamalarını tanımlayın
 stages:
   - build
   - deploy
 
-# Build aşamasını tanımlayın
-build_job: # Job adını `build` olarak değiştirin, çünkü `build` aynı zamanda bir stage adı
+build_job:
   stage: build
   before_script:
     - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
   script:
     - echo "Building the application..."
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA . # Docker imajını oluşturun
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA # Docker imajını GitLab Container Registry'sine yükleyin
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
 
-# Deploy aşamasını tanımlayın
-deploy:
+deploy_job:
   stage: deploy
   tags:
     - ec2-runner
@@ -32,13 +28,8 @@ deploy:
     - feature/ci-cd
   script:
     - echo "Deploying the application..."
-    - Get-Content .\src\.env | Foreach-Object {
-      - $key, $value = $_ -split '=', 2
-      - $env:$key = $value
-      }
-    - $env:DOCKER_COMPOSE_CONTENT = Get-Content .dev/docker-compose.template.yml
-    - $expandedContent = $env:DOCKER_COMPOSE_CONTENT | Expand-String
-    - $expandedContent | Out-File docker-compose.yml
+    - apk add gettext
+    - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
     - scp -i ${SSH_PRIVATE_KEY} docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
     - ssh -i ${SSH_PRIVATE_KEY} ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
   environment:
