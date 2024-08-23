@@ -28,14 +28,17 @@ build_job:
       .
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
+    - docker pull maven:3-jdk-11  # Maven imajını çekin (build aşamasına taşındı)
+    - docker run --name maven-container -d maven:3-jdk-11 tail -f /dev/null # Maven container'ını başlatın
+    - docker cp . maven-container:/app # Proje dosyalarını Maven container'ına kopyalayın
+    - docker exec maven-container mvn -B dependency:go-offline # Bağımlılıkları indirin (isteğe bağlı)
+    - docker commit maven-container $CI_REGISTRY_IMAGE:with-maven  # Yeni bir imaj oluşturun ve etiketleyin
+    - docker push $CI_REGISTRY_IMAGE:with-maven  # Yeni imajı GitLab Container Registry'sine yükleyin
 
 test_job:
   stage: test
-  before_script:
-    - apt update
-    - apt install --no-install-recommends -y openssh-client gettext-base
+  image: $CI_REGISTRY_IMAGE:with-maven  # Maven içeren imajı kullanın
   script:
-    - apk add --no-cache maven
     - mvn clean test
 
 deploy_job:
