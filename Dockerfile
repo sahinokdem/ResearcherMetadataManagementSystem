@@ -1,5 +1,5 @@
 
-FROM fedora:latest
+FROM eclipse/ubuntu_jdk8
 
 RUN dnf install java-21-openjdk -y
 
