@@ -34,8 +34,8 @@ test_job:
   before_script:
     - apt update
     - apt install --no-install-recommends -y openssh-client gettext-base
-    - apk add --no-cache maven
   script:
+    - apk add --no-cache maven
     - mvn clean test
 
 deploy_job:
