@@ -30,11 +30,8 @@ build_job:
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
 test_job:
-  image: docker:20.10
+  image: maven:3-jdk-11
   stage: test
-  before_script:
-    - apt-get update
-    - apt-get install -y maven
   script:
     - mvn clean test
 
