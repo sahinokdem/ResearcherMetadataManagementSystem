@@ -28,10 +28,15 @@ build_job:
     - docker build --network host --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG .
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
+  artifacts:
+    paths:
+      - .m2/repository
 
 test_job:
-
   stage: test
+  image: docker:20.10
+  dependencies:
+    - build_job
   script:
     - mvn clean test
 
