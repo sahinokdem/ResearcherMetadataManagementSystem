@@ -2,8 +2,14 @@ variables:
   CI_IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
 
 stages:
+  - test
   - build
   - deploy
+
+test_job:
+  stage: test
+  script:
+    - mvn clean test
 
 build_job:
   image: docker:20.10

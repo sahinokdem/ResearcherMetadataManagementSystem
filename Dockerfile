@@ -10,7 +10,7 @@ WORKDIR /app
 COPY ./ ./
 
 RUN mvn \
-    -Dmaven.test.skip=true \
+    -Dmaven.test.skip=false \
     --batch-mode \
     package
 
