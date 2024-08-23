@@ -3,8 +3,6 @@ FROM fedora:latest
 
 RUN sudo dnf install java-21-openjdk -y
 RUN sudo dnf install maven -y
-RUN sudo systemctl start docker
-RUN sudo systemctl enable docker
 
 WORKDIR /app
 
