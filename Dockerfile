@@ -1,9 +1,9 @@
 
 FROM fedora:latest
 
-RUN dnf install java-21-openjdk -y
+RUN sudo dnf install java-21-openjdk -y
 
-RUN dnf install maven -y
+RUN sudo dnf install maven -y
 
 WORKDIR /app
 
