@@ -46,7 +46,7 @@ deploy_job:
     - echo "Deploying the application..."
     - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
     - scp docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
-    - ssh ${REMOTE_USER}@${REMOTE_HOST} 'docker-compose up -d'
+    - ssh ${REMOTE_USER}@${REMOTE_HOST} 'sudo docker-compose up -d'
   environment:
     name: production
     url: http://${REMOTE_HOST}:8085
