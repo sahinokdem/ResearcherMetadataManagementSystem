@@ -25,10 +25,7 @@ build_job:
     - apk add --no-cache maven  # apk kullanarak Maven'ı yükleyin
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
-    - docker build \
-      --network host \
-      --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG \
-      .
+    - docker build --network host --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG .
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
