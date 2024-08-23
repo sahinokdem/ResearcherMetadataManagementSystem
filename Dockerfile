@@ -1,8 +1,8 @@
 
 FROM eclipse/ubuntu_jdk8
 
-RUN apt-get update && \
-    apt-get install -y openjdk-17-jdk maven
+RUN sudo apt-get update && \
+    sudo apt-get install -y openjdk-17-jdk maven
 
 WORKDIR /app
 
