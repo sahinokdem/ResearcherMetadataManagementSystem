@@ -1,9 +1,9 @@
 
 FROM fedora:latest
 
-FROM maven:3.8.6-eclipse-temurin-11-alpine AS maven
-RUN apk update && apk add git && apk add net-tools procps openssh-client openssh-server
-RUN mkdir -p $HOME/images/lib/ && cd $HOME/images/lib/
+RUN sudo dnf install java-21-openjdk -y
+
+RUN sudo dnf install maven -y
 
 WORKDIR /app
 
