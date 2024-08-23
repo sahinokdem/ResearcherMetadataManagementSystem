@@ -1,9 +1,8 @@
 
 FROM eclipse/ubuntu_jdk8
 
-RUN dnf install java-21-openjdk -y
-
-RUN dnf install maven -y
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk maven
 
 WORKDIR /app
 
