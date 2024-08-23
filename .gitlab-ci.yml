@@ -2,15 +2,9 @@ variables:
   CI_IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
 
 stages:
-  - test
   - build
+  - test
   - deploy
-
-test_job:
-  stage: test
-  image: maven:3-jdk-11
-  script:
-    - mvn clean test
 
 build_job:
   image: docker:20.10
@@ -35,6 +29,10 @@ build_job:
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
+test_job:
+  stage: test
+  script:
+    - mvn clean test
 
 deploy_job:
   stage: deploy
