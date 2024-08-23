@@ -8,7 +8,7 @@ stages:
 
 test_job:
   stage: test
-  image: maven:3-jdk-21
+  image: maven:8-jdk-alpine
   script:
     - mvn clean test
 
