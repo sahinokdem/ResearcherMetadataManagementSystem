@@ -32,6 +32,9 @@ build_job:
 test_job:
   image: docker:20.10
   stage: test
+  before_script:
+    - apt-get update
+    - apt-get install -y maven
   script:
     - mvn clean test
 
