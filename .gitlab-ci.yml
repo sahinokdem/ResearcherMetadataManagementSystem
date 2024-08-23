@@ -30,6 +30,7 @@ build_job:
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
 test_job:
+  image: docker:20.10
   stage: test
   script:
     - mvn clean test
