@@ -27,14 +27,13 @@ build_job:
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
-
 deploy_job:
   stage: deploy
   only:
     - feature/ci-cd
   before_script:
     - apt update
-    - apt install --no-install-recommends -y openssh-client gettext-base
+    - apt install --no-install-recommends -y openssh-client gettext
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
