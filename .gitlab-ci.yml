@@ -32,6 +32,7 @@ deploy_job:
   only:
     - feature/ci-cd
   before_script:
+    - docker system prune --all
     - apt update
     - apt install --no-install-recommends -y openssh-client gettext-base
     - eval $(ssh-agent -s)
