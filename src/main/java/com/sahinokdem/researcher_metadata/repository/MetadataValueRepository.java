@@ -8,10 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MetadataValueRepository extends JpaRepository<MetadataValue, String> {
+public interface MetadataValueRepository extends EntityWithOwnerRepository<MetadataValue> {
 
-    Optional<MetadataValue> findByOwnerAndId(User owner, String id);
     List<MetadataValue> findAllByOwnerAndMetadataRegistry(User owner, MetadataRegistry metadataRegistry);
     List<MetadataValue> findAllByMetadataRegistry(MetadataRegistry metadataRegistry);
-    List<MetadataValue> findAllByOwner(User owner);
 }

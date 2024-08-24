@@ -22,12 +22,15 @@ public class MetadataValueService {
 
     private final UserRoleService userRoleService;
     private final AuthenticationService authenticationService;
+    private final EntityAccessService entityAccessService;
     private final MetadataValueMapper metadataValueMapper;
     private final MetadataValueRepository metadataValueRepository;
     private final MetadataRegistryRepository metadataRegistryRepository;
 
+
     public List<MetadataValueResponse> getAllMetadataValues() {
-        List<MetadataValue> metadataValues = getAllMetadataValueEntities();
+        List<MetadataValue> metadataValues = entityAccessService.getAllEntities(
+                metadataValueRepository, UserRole.RESEARCHER, UserRole.EDITOR);
         return metadataValues.stream()
                 .map(metadataValueMapper::toResponse)
                 .collect(Collectors.toList());
@@ -41,7 +44,9 @@ public class MetadataValueService {
     }
 
     public MetadataValueResponse getMetadataValue(String metadataValueId) {
-        MetadataValue metadataValue = getMetadataValueEntity(metadataValueId);
+        MetadataValue metadataValue = entityAccessService.getEntity(metadataValueId,
+                metadataValueRepository, UserRole.RESEARCHER, UserRole.EDITOR, BusinessExceptions.METADATA_VALUE_NOT_FOUND
+        );
         return metadataValueMapper.toResponse(metadataValue);
     }
 
@@ -66,17 +71,6 @@ public class MetadataValueService {
         metadataValueRepository.deleteById(metadataValueId);
     }
 
-    private List<MetadataValue> getAllMetadataValueEntities() {
-        if (userRoleService.checkCurrentUserRole(UserRole.RESEARCHER)) {
-            User owner = authenticationService.getAuthenticatedUser();
-            return metadataValueRepository.findAllByOwner(owner);
-        } else if (userRoleService.checkCurrentUserRole(UserRole.EDITOR)) {
-            return metadataValueRepository.findAll();
-        } else {
-            throw BusinessExceptions.AUTHORIZATION_MISSING;
-        }
-    }
-
     private List<MetadataValue> getAllMetadataValueEntitiesByRegistry(String registryName) {
         MetadataRegistry metadataRegistry = metadataRegistryRepository.findByName(registryName)
                 .orElseThrow(() -> BusinessExceptions.REGISTRY_NOT_FOUND);
@@ -85,19 +79,6 @@ public class MetadataValueService {
             return metadataValueRepository.findAllByOwnerAndMetadataRegistry(owner, metadataRegistry);
         } else if (userRoleService.checkCurrentUserRole(UserRole.EDITOR)) {
             return metadataValueRepository.findAllByMetadataRegistry(metadataRegistry);
-        } else {
-            throw BusinessExceptions.AUTHORIZATION_MISSING;
-        }
-    }
-
-    private MetadataValue getMetadataValueEntity(String metadataValueId) {
-        if (userRoleService.checkCurrentUserRole(UserRole.RESEARCHER)) {
-            User owner = authenticationService.getAuthenticatedUser();
-            return metadataValueRepository.findByOwnerAndId(owner, metadataValueId)
-                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
-        } else if (userRoleService.checkCurrentUserRole(UserRole.EDITOR)) {
-            return metadataValueRepository.findById(metadataValueId)
-                    .orElseThrow(() -> BusinessExceptions.METADATA_VALUE_NOT_FOUND);
         } else {
             throw BusinessExceptions.AUTHORIZATION_MISSING;
         }

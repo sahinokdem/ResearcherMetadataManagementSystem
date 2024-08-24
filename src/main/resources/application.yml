@@ -8,4 +8,5 @@ spring:
       logging,
       server,
       storage,
-      swagger
+      swagger,
+      penalty

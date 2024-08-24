@@ -1,0 +1,3 @@
+penalty:
+  short-penalty: ${SHORT_DAYS}
+  big-penalty: ${LONG_DAYS}
