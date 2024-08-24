@@ -3,6 +3,7 @@ variables:
 
 stages:
   - build
+  - test
   - deploy
 
 build_job:
@@ -25,6 +26,20 @@ build_job:
     - docker build --network host --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG .
     - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
+
+test_job:
+  image: docker:20.10
+  stage: test
+  services:
+    - docker:20.10-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - apk add --no-cache maven
+  script:
+    - mvn verify
 
 deploy_job:
   stage: deploy
