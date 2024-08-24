@@ -9,12 +9,20 @@ import com.sahinokdem.researcher_metadata.exception.BusinessException;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.repository.CVInfoRepository;
 import com.sahinokdem.researcher_metadata.repository.FormRepository;
+import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
+import com.sahinokdem.researcher_metadata.repository.MetadataValueRepository;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @DFA
 @Service
@@ -23,16 +31,33 @@ public class JobApplicationService {
     private final PenaltyTimeConfig penaltyTimeConfig;
     private final FormRepository formRepository;
     private final CVInfoRepository cvInfoRepository;
+    private final MetadataValueRepository metadataValueRepository;
+    private final MetadataRegistryRepository metadataRegistryRepository;
     @Setter
     @Getter
     private State currentState;
+    @Autowired
+    private RestTemplate restTemplate;
 
     public JobApplicationService(PenaltyTimeConfig penaltyTimeConfig,
-             FormRepository formRepository, CVInfoRepository cvInfoRepository) {
+             FormRepository formRepository, CVInfoRepository cvInfoRepository,
+             MetadataValueRepository metadataValueRepository, MetadataRegistryRepository metadataRegistryRepository) {
         this.penaltyTimeConfig = penaltyTimeConfig;
         this.formRepository = formRepository;
         this.cvInfoRepository = cvInfoRepository;
         this.currentState = State.Q0;
+        this.metadataValueRepository = metadataValueRepository;
+        this.metadataRegistryRepository = metadataRegistryRepository;
+    }
+
+    public String getCitationCountFromFastAPI(String researcherId) {
+        String url = "http://localhost:8000/get_citation_count/" + researcherId;
+        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            return (String) response.getBody().get("citation_count");
+        } else {
+            throw new RuntimeException("FastAPI'den citation_count alınamadı.");
+        }
     }
 
     public void readyToFormSend(User user) {
@@ -87,5 +112,16 @@ public class JobApplicationService {
 
     public void assertState(State state, BusinessException exception) {
         if (!state.equals(currentState)) throw exception;
+    }
+
+    public void setCitationCountOfResearcher(User user) {
+        Form previousForm = formRepository.findAllByOwner(user).get(getFormCount(user) - 1);
+        if (!previousForm.getExternalApiId().isEmpty()) {
+            String citation_count = getCitationCountFromFastAPI(user.getId());
+            MetadataRegistry metadataRegistry = metadataRegistryRepository.findById("e8f2a71d-4b9c-4a7e-8c3f-5d1a8f9b2c6e")
+                    .orElseThrow(() -> BusinessExceptions.REGISTRY_TYPE_NOT_FOUND);
+            MetadataValue metadataValue = new MetadataValue(user, metadataRegistry, citation_count);
+            metadataValueRepository.save(metadataValue);
+        }
     }
 }

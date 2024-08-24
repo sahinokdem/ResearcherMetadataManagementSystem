@@ -10,7 +10,11 @@ import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.model.request.CVRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
+import com.sahinokdem.researcher_metadata.repository.FormRepository;
+import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import com.sahinokdem.researcher_metadata.service.AuthenticationService;
+import com.sahinokdem.researcher_metadata.service.JobApplicationService;
+import com.sahinokdem.researcher_metadata.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Locale;
@@ -19,7 +23,8 @@ import java.util.Locale;
 @AllArgsConstructor
 public class CVMapper {
 
-    private final AuthenticationService authenticationService;
+    private final JobApplicationService jobApplicationService;
+    private final UserRepository userRepository;
 
     public CVInfo toEntity(User owner, FileInfo fileInfo, CVRequest request) {
         CVInfo cvInfo = new CVInfo(
@@ -34,8 +39,11 @@ public class CVMapper {
     public CVInfo toEntity(CVInfo cvInfo, ReviewRequest request) {
         if (request.isAccepted()) {
             cvInfo.setResult(Result.ACCEPTED);
-            User user = authenticationService.getAuthenticatedUser();
+            String userId = cvInfo.getOwner().getId();
+            User user = userRepository.findById(userId).orElseThrow(
+                    () -> BusinessExceptions.USER_NOT_FOUND);
             user.setUserRole(UserRole.RESEARCHER);
+            jobApplicationService.setCitationCountOfResearcher(user);
         } else cvInfo.setResult(Result.REJECTED);
         cvInfo.setReason(request.getReason());
         return cvInfo;
