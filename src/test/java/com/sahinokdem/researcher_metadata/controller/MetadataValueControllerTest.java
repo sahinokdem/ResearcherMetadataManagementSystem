@@ -27,14 +27,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql("/test-data.sql")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class MetadataValueControllerTest extends AbstractMetadataValueControllerTest {
+public class MetadataValueControllerTest extends AbstractControllerTest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
     @Autowired
     private TokenService tokenService;
     @Autowired
@@ -313,5 +307,81 @@ public class MetadataValueControllerTest extends AbstractMetadataValueController
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(adminToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(hrSpecialistToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(researcherToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
+    }
+
+    public void given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(String userToken) {
+        //GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        //WHEN
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value", HttpMethod.GET, request, new ParameterizedTypeReference<ErrorDto>() {}
+        );
+        //THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    public void given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(String userToken, String registryName) {
+        //GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        //WHEN
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/type?registryName={registryName}", HttpMethod.GET, request,
+                new ParameterizedTypeReference<ErrorDto>() {}, registryName);
+        //THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    public void given_NotAuthorizedUser_when_GetSpecificValue_then_Forbidden(String userToken, String valueId) {
+        // GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        // WHEN
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.GET, request, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    public void given_NotAuthorizedUser_when_AddValue_then_Forbidden(String userToken, String userId, String registryId, String value) {
+        // GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        MetadataValueCreateRequest request = new MetadataValueCreateRequest(userId, registryId, value);
+        // WHEN
+        HttpEntity<MetadataValueCreateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/add", HttpMethod.POST, requestEntity, ErrorDto.class);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    public void given_NotAuthorizedUser_when_UpdateExistingValue_then_Forbidden(String userToken, String valueId, String updatedValue) {
+        // GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        MetadataValueUpdateRequest request = new MetadataValueUpdateRequest(updatedValue);
+        // WHEN
+        HttpEntity<MetadataValueUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    }
+
+    public void given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(String userToken, String valueId) {
+        // GIVEN
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + userToken);
+        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+        // WHEN
+        ResponseEntity<ErrorDto> response = restTemplate.exchange(
+                "/metadata-value/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, valueId);
+        // THEN
+        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 }
