@@ -28,18 +28,12 @@ build_job:
     - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
 
 test_job:
-  image: docker:20.10
   stage: test
+  image: maven:3.8.5-openjdk-17-slim
   services:
-    - docker:20.10-dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: '/certs'
-    DOCKER_DRIVER: overlay2
-  before_script:
-    - apk add --no-cache maven
+    - docker:24.0.5-dind
   script:
-    - mvn verify
+    - mvn clean test
 
 deploy_job:
   stage: deploy
