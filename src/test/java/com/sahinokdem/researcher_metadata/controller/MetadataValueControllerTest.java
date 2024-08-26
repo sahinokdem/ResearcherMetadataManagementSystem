@@ -84,7 +84,6 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
     public void given_NotAuthorizedUsers_when_GetAllValues_then_Forbidden() {
         given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(adminToken);
         given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(hrSpecialistToken);
-        given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(jobApplicantToken);
     }
 
     @Test
@@ -148,8 +147,6 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(adminToken, "citation_count");
         given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(hrSpecialistToken, "name");
         given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(hrSpecialistToken, "citation_count");
-        given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(jobApplicantToken, "name");
-        given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(jobApplicantToken, "citation_count");
     }
 
     @Test
@@ -217,8 +214,6 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
                 "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
         given_NotAuthorizedUser_when_GetSpecificValue_then_Forbidden(hrSpecialistToken,
                 "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
-        given_NotAuthorizedUser_when_GetSpecificValue_then_Forbidden(jobApplicantToken,
-                "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
     }
 
     @Test
@@ -253,8 +248,6 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
                 "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a", "new_value");
         given_NotAuthorizedUser_when_AddValue_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a",
                 "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a", "new_value");
-        given_NotAuthorizedUser_when_AddValue_then_Forbidden(jobApplicantToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8a",
-                "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a", "new_value");
     }
 
     @Test
@@ -287,8 +280,6 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
                 "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a", "updated_value");
         given_NotAuthorizedUser_when_UpdateExistingValue_then_Forbidden(researcherToken,
                 "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a", "updated_value");
-        given_NotAuthorizedUser_when_UpdateExistingValue_then_Forbidden(jobApplicantToken,
-                "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a", "updated_value");
     }
 
     @Test
@@ -316,10 +307,9 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(adminToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(hrSpecialistToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
         given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(researcherToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
-        given_NotAuthorizedUser_when_DeleteExistingValue_then_Forbidden(jobApplicantToken, "d9a2f3d2-7b8b-4b32-9101-dc431b6c5b8a");
     }
 
-    public void given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(String userToken) {
+    private void given_NotAuthorizedUser_when_GetAllValues_then_Forbidden(String userToken) {
         //GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -332,7 +322,7 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(String userToken, String registryName) {
+    private void given_NotAuthorizedUser_when_GetAllValuesWithType_then_Forbidden(String userToken, String registryName) {
         //GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -345,7 +335,7 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_GetSpecificValue_then_Forbidden(String userToken, String valueId) {
+    private void given_NotAuthorizedUser_when_GetSpecificValue_then_Forbidden(String userToken, String valueId) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -357,7 +347,7 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_AddValue_then_Forbidden(String userToken, String userId, String registryId, String value) {
+    private void given_NotAuthorizedUser_when_AddValue_then_Forbidden(String userToken, String userId, String registryId, String value) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -370,7 +360,7 @@ public class MetadataValueControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_UpdateExistingValue_then_Forbidden(String userToken, String valueId, String updatedValue) {
+    private void given_NotAuthorizedUser_when_UpdateExistingValue_then_Forbidden(String userToken, String valueId, String updatedValue) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);

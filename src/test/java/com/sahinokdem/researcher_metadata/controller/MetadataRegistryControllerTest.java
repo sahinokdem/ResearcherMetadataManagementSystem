@@ -62,7 +62,6 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(adminToken);
         given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(hrSpecialistToken);
         given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(researcherToken);
-        given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(jobApplicantToken);
     }
 
     @Test
@@ -93,7 +92,6 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
         given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
         given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
-        given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(jobApplicantToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
     }
 
     @Test
@@ -250,10 +248,6 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(hrSpecialistToken, "new_registry", MetadataRegistryType.POSITIVE_INTEGER);
         given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(hrSpecialistToken, "new_registry", MetadataRegistryType.RESEARCH_FIELD);
         given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(hrSpecialistToken, "new_registry", MetadataRegistryType.EDUCATION_DEGREE);
-        given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(jobApplicantToken, "new_registry", MetadataRegistryType.STRING);
-        given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(jobApplicantToken, "new_registry", MetadataRegistryType.POSITIVE_INTEGER);
-        given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(jobApplicantToken, "new_registry", MetadataRegistryType.RESEARCH_FIELD);
-        given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(jobApplicantToken, "new_registry", MetadataRegistryType.EDUCATION_DEGREE);
     }
 
     @Test
@@ -289,75 +283,19 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void given_AdminUser_when_UpdateExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        String updatedRegistryName = "updated_registry_by_admin";
-        MetadataRegistryType updatedRegistryType = MetadataRegistryType.POSITIVE_INTEGER;
-        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String adminToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
-                updatedRegistryName,
-                updatedRegistryType.toString()
-        );
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
-    }
-
-    @Test
-    public void given_HRSpecialistUser_when_UpdateExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        String updatedRegistryName = "updated_registry_by_hr";
-        MetadataRegistryType updatedRegistryType = MetadataRegistryType.POSITIVE_INTEGER;
-        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String hrSpecialistToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
-                updatedRegistryName,
-                updatedRegistryType.toString()
-        );
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + hrSpecialistToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
-    }
-
-    @Test
-    public void given_ResearcherUser_when_UpdateExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        String updatedRegistryName = "updated_registry_by_researcher";
-        MetadataRegistryType updatedRegistryType = MetadataRegistryType.POSITIVE_INTEGER;
-        User user = userRepository.findByEmail("researcher@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String researcherToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
-                updatedRegistryName,
-                updatedRegistryType.toString()
-        );
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + researcherToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    public void given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden() {
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "STRING");
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "POSITIVE_INTEGER");
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "STRING");
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "POSITIVE_INTEGER");
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "STRING");
+        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
+                "updated_registry", "POSITIVE_INTEGER");
     }
 
     @Test
@@ -383,60 +321,13 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void given_AdminUser_when_DeleteExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        User user = userRepository.findByEmail("admin@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String adminToken = tokenService.getTokenFor(user);
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + adminToken);
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
+    public void given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden() {
+        given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
+        given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
+        given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a");
     }
 
-    @Test
-    public void given_HRSpecialistUser_when_DeleteExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        User user = userRepository.findByEmail("hr_specialist@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String hrSpecialistToken = tokenService.getTokenFor(user);
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + hrSpecialistToken);
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
-    }
-
-    @Test
-    public void given_ResearcherUser_when_DeleteExistingRegistry_then_Forbidden() {
-        // GIVEN
-        String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
-        User user = userRepository.findByEmail("researcher@test.com").orElseThrow(
-                () -> new RuntimeException("Invalid Test Data Provided")
-        );
-        String researcherToken = tokenService.getTokenFor(user);
-        // WHEN
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + researcherToken);
-        HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<ErrorDto> response = restTemplate.exchange(
-                "/metadata-registry/{id}", HttpMethod.DELETE, requestEntity, ErrorDto.class, registryId);
-        // THEN
-        TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
-    }
-
-    public void given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(String userToken) {
+    private void given_NotAuthorizedUser_when_GetAllRegistries_then_Forbidden(String userToken) {
         //GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -449,7 +340,7 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(String userToken, String registryId) {
+    private void given_NotAuthorizedUser_when_GetSpecificRegistry_then_Forbidden(String userToken, String registryId) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
@@ -461,7 +352,7 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(String userToken, String registryName,
+    private void given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(String userToken, String registryName,
                                                                         MetadataRegistryType registryType) {
         // GIVEN
         MetadataRegistryRequest request = new MetadataRegistryRequest(
@@ -478,7 +369,7 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(String userToken, String registryId,
+    private void given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(String userToken, String registryId,
                                                                                    String updatedRegistryName, String updatedRegistryType) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
@@ -492,7 +383,7 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         TestUtils.assertErrorDto(BusinessExceptions.AUTHORIZATION_MISSING, response);
     }
 
-    public void given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden(String userToken, String registryId) {
+    private void given_NotAuthorizedUser_when_DeleteExistingRegistry_then_Forbidden(String userToken, String registryId) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);

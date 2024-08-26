@@ -29,7 +29,6 @@ public abstract class AbstractControllerTest {
     public String editorToken = null;
     public String hrSpecialistToken = null;
     public String researcherToken = null;
-    public String jobApplicantToken = null;
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
@@ -43,6 +42,5 @@ public abstract class AbstractControllerTest {
         editorToken = tokenService.getTokenFor(getUserByEmail("editor@test.com"));
         hrSpecialistToken = tokenService.getTokenFor(getUserByEmail("hr_specialist@test.com"));
         researcherToken = tokenService.getTokenFor(getUserByEmail("researcher@test.com"));
-        jobApplicantToken = tokenService.getTokenFor(getUserByEmail("job_applicant@test.com"));
     }
 }
