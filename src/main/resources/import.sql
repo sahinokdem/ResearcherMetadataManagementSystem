@@ -16,6 +16,15 @@ VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8b', now(), now(), 'sec_researcher@te
 INSERT INTO users (id, created_date, modified_date, email, password_encoded, user_role)
 VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6y5b8b', now(), now(), 'job_applicant@test.com', '$2a$10$5wUz/bDg6tPD2B.ziDx2MeKWFueKaiiFFwr6i.VyhfqUkxXWnna6m', 0);
 
+INSERT INTO users (id, created_date, modified_date, email, password_encoded, user_role)
+VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6y5b8k', now(), now(), 'job_applicant2@test.com', '$2a$10$5wUz/bDg6tPD2B.ziDx2MeKWFueKaiiFFwr6i.VyhfqUkxXWnna6m', 0);
+
+INSERT INTO users (id, created_date, modified_date, email, password_encoded, user_role)
+VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6y5b8d', now(), now(), 'job_applicant3@test.com', '$2a$10$5wUz/bDg6tPD2B.ziDx2MeKWFueKaiiFFwr6i.VyhfqUkxXWnna6m', 0);
+
+INSERT INTO users (id, created_date, modified_date, email, password_encoded, user_role)
+VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6y5b8f', now(), now(), 'job_applicant4@test.com', '$2a$10$5wUz/bDg6tPD2B.ziDx2MeKWFueKaiiFFwr6i.VyhfqUkxXWnna6m', 0);
+
 INSERT INTO metadata_registry (id, created_date, modified_date, name, type)
 VALUES ('e8f2a71d-4b9c-4a7e-8c3f-5d1a8f9b2c6e', now(), now(), 'citation_count', 1);
 

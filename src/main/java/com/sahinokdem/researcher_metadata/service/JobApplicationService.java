@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -50,13 +51,21 @@ public class JobApplicationService {
         this.metadataRegistryRepository = metadataRegistryRepository;
     }
 
-    public String getCitationCountFromFastAPI(String researcherId) {
-        String url = "http://localhost:8000/get_citation_count/" + researcherId;
-        ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            return (String) response.getBody().get("citation_count");
-        } else {
-            throw new RuntimeException("FastAPI'den citation_count alınamadı.");
+    public String getCitationCountFromFastAPI(String researcherApiId) {
+        String url = "http://localhost:8000/get_citation_count/" + researcherApiId;
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            if (response.getStatusCode() == HttpStatus.OK) {
+                return response.getBody().get("citation_count").toString();
+            } else {
+                throw BusinessExceptions.CITATION_COUNT_NOT_READ;
+            }
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return null;
+            } else {
+                throw BusinessExceptions.CITATION_COUNT_NOT_READ;
+            }
         }
     }
 
@@ -65,7 +74,7 @@ public class JobApplicationService {
         Form previousForm = null;
         int formCount = getFormCount(user);
         if (formCount == 0) {
-            setCurrentState(State.Q0);
+            setCurrentState(State.Q1);
             return;
         } else previousForm = formRepository.findAllByOwner(user).get(formCount - 1);
         checkApplicationResult(previousForm, penaltyTimeConfig.getLongPenaltyTime(), State.Q0);
@@ -90,6 +99,7 @@ public class JobApplicationService {
             case REJECTED:
                 LocalDate penaltyDate = LocalDate.from(application.getCreatedDate()
                         .plusDays(penaltyTime));
+                System.out.println(penaltyDate);
                 assertPenaltyTime(penaltyDate, previousState);
         }
     }
@@ -105,9 +115,11 @@ public class JobApplicationService {
     }
 
     private void assertPenaltyTime(LocalDate penaltyDate, State state) {
-        if (penaltyDate.isBefore(LocalDate.now())) {
+        if (penaltyDate.isAfter(LocalDate.now())) {
             throw BusinessExceptions.APPLICATION_PENALTY;
-        } else setCurrentState(state);
+        } else {
+            setCurrentState(state);
+        }
     }
 
     public void assertState(State state, BusinessException exception) {
@@ -117,7 +129,7 @@ public class JobApplicationService {
     public void setCitationCountOfResearcher(User user) {
         Form previousForm = formRepository.findAllByOwner(user).get(getFormCount(user) - 1);
         if (!previousForm.getExternalApiId().isEmpty()) {
-            String citation_count = getCitationCountFromFastAPI(user.getId());
+            String citation_count = getCitationCountFromFastAPI(previousForm.getExternalApiId());
             MetadataRegistry metadataRegistry = metadataRegistryRepository.findById("e8f2a71d-4b9c-4a7e-8c3f-5d1a8f9b2c6e")
                     .orElseThrow(() -> BusinessExceptions.REGISTRY_TYPE_NOT_FOUND);
             MetadataValue metadataValue = new MetadataValue(user, metadataRegistry, citation_count);
