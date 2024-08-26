@@ -1,6 +1,6 @@
 package com.sahinokdem.researcher_metadata.entity;
 
-import com.sahinokdem.researcher_metadata.enums.CVAssociation;
+import com.sahinokdem.researcher_metadata.enums.FileAssociation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,5 +18,5 @@ import javax.persistence.Table;
 public class CVInfo extends ApplicationEntity {
     @OneToOne
     private FileInfo fileInfo;
-    private CVAssociation cvAssociation;
+    private FileAssociation fileAssociation;
 }

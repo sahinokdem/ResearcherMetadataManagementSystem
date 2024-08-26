@@ -3,18 +3,15 @@ package com.sahinokdem.researcher_metadata.mapper;
 import com.sahinokdem.researcher_metadata.entity.CVInfo;
 import com.sahinokdem.researcher_metadata.entity.FileInfo;
 import com.sahinokdem.researcher_metadata.entity.User;
-import com.sahinokdem.researcher_metadata.enums.CVAssociation;
+import com.sahinokdem.researcher_metadata.enums.FileAssociation;
 import com.sahinokdem.researcher_metadata.enums.Result;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.model.request.CVRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
-import com.sahinokdem.researcher_metadata.repository.FormRepository;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
-import com.sahinokdem.researcher_metadata.service.AuthenticationService;
 import com.sahinokdem.researcher_metadata.service.JobApplicationService;
-import com.sahinokdem.researcher_metadata.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Locale;
@@ -54,16 +51,16 @@ public class CVMapper {
                 cvInfo.getId(),
                 cvInfo.getFileInfo().getId(),
                 cvInfo.getFileInfo().getName(),
-                cvInfo.getCvAssociation(),
+                cvInfo.getFileAssociation(),
                 cvInfo.getResult(),
                 cvInfo.getReason()
         );
     }
 
-    public CVAssociation toType(String type) {
+    public FileAssociation toType(String type) {
         String normalizedType = type.replaceAll("\\s+", "_").toUpperCase(Locale.ENGLISH);
         try {
-            return CVAssociation.valueOf(normalizedType);
+            return FileAssociation.valueOf(normalizedType);
         } catch (IllegalArgumentException e) {
             throw BusinessExceptions.INVALID_REGISTRY_TYPE;
         }

@@ -4,6 +4,8 @@ import com.sahinokdem.researcher_metadata.enums.Result;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToOne;
 
@@ -12,7 +14,7 @@ import javax.persistence.OneToOne;
 @Getter
 @Setter
 public class ApplicationEntity extends BaseEntity{
-    @OneToOne
+    @ManyToOne
     private User owner;
     private Result result;
     private String reason;
