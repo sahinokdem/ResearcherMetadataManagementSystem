@@ -11,12 +11,12 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
       - SWAGGER_URL=${SWAGGER_URL}
-      - STORAGE_PATH=${STORAGE_PATH}
+      - STORAGE_PATH=/app/cdn
       - SHORT_DAYS=${SHORT_DAYS}
       - LONG_DAYS=${LONG_DAYS}
     network_mode: "host"
     volumes:
-      - app/uploads:${STORAGE_PATH}
+      - ${STORAGE_PATH}:/app/cdn
 
 #volumes:
 #  app-uploads:

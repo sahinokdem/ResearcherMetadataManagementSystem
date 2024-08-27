@@ -44,8 +44,6 @@ test_job:
 
 deploy_job:
   stage: deploy
-  only:
-    - feature/ci-cd
   before_script:
     - apt update
     - apt install --no-install-recommends -y openssh-client gettext
