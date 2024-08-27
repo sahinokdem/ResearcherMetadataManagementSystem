@@ -15,8 +15,8 @@ services:
       - SHORT_DAYS=${SHORT_DAYS}
       - LONG_DAYS=${LONG_DAYS}
     network_mode: "host"
-#    volumes:
-#      - app-uploads:${STORAGE_PATH}
+    volumes:
+      - app/uploads:${STORAGE_PATH}
 
 #volumes:
 #  app-uploads:
