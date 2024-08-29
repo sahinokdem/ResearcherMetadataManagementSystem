@@ -67,34 +67,40 @@ public class JobApplicationService {
 
     public void readyToFormSend(User user) {
         State userState = user.getCurrentState();
-        assertState(State.SEND_FORM, userState, BusinessExceptions.APPLICATION_ACCEPTED);
-        Form previousForm = null;
-        int formCount = getFormCount(user);
-        if (formCount == 0) {
+        Form previousForm = formRepository.findTopByOwnerOrderByCreatedDateDesc(user);
+        CVInfo previousCvInfo = cvInfoRepository.findTopByOwnerOrderByCreatedDateDesc(user);
+        if (previousForm == null) {
             return;
-        } else previousForm = formRepository.findAllByOwner(user).get(formCount - 1);
-
-        checkApplicationResult(previousForm, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
+        }
+        if (userState == State.SEND_FORM) {
+            checkApplicationResult(previousForm, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
+        } else if (userState == State.SECOND_CV_SENT) {
+            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
+        } else {
+            throw BusinessExceptions.APPLICATION_ACCEPTED;
+        }
     }
 
     public void readyToCvSend(User user) {
-        State userState = user.getCurrentState();
-        assertState(State.SEND_CV, userState, BusinessExceptions.FORM_NOT_FOUND);
-        int cvCount = getCvInfoCount(user);
+        State userState = user.getCurrentState();;
         CVInfo previousCvInfo = cvInfoRepository.findTopByOwnerOrderByCreatedDateDesc(user);
-        if (previousCvInfo == null) {
-            return;
-        } else if (cvCount == 1) {
-            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getShortPenaltyTime(), State.SEND_CV, user);
-        } else {
+        if (userState == State.SEND_CV) {
+            user.setCurrentState(State.SEND_SECOND_CV);
+        } else if (userState == State.SEND_SECOND_CV) {
+            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getShortPenaltyTime(), State.SEND_SECOND_CV, user);
+            user.setCurrentState(State.SECOND_CV_SENT);
+        } else if (userState == State.SECOND_CV_SENT) {
             checkApplicationResult(previousCvInfo, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
+            throw BusinessExceptions.CV_REJECTED_NEW_FORM_REQUIRED;
+        } else {
+            throw BusinessExceptions.FORM_NOT_FOUND;
         }
     }
 
     private void checkApplicationResult(ApplicationEntity application, int penaltyTime, State previousState, User user) {
         switch (application.getResult()) {
             case ACCEPTED:
-                throw BusinessExceptions.APPLICATION_ACCEPTED;
+                return;
             case WAITING_FOR_ACCEPTANCE:
                 throw BusinessExceptions.WAITING_APPLICATION_EXIST;
             case REJECTED:
@@ -127,7 +133,7 @@ public class JobApplicationService {
     }
 
     public void setCitationCountOfResearcher(User user) {
-        Form previousForm = formRepository.findAllByOwner(user).get(getFormCount(user) - 1);
+        Form previousForm = formRepository.findTopByOwnerOrderByCreatedDateDesc(user);
         if (!previousForm.getExternalApiId().isEmpty()) {
             String citation_count = getCitationCountFromFastAPI(previousForm.getExternalApiId());
             MetadataRegistry metadataRegistry = metadataRegistryRepository.findById("e8f2a71d-4b9c-4a7e-8c3f-5d1a8f9b2c6e")

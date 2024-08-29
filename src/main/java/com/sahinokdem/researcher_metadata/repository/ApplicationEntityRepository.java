@@ -8,4 +8,5 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface ApplicationEntityRepository<T> extends EntityWithOwnerRepository<T> {
     Optional<T> findByOwnerAndResult(User owner, Result result);
+    T findTopByOwnerOrderByCreatedDateDesc(User user);
 }

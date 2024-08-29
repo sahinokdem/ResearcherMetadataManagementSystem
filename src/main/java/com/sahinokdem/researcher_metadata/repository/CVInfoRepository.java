@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CVInfoRepository extends ApplicationEntityRepository<CVInfo> {
-
-    CVInfo findTopByOwnerOrderByCreatedDateDesc(User user);
 }
