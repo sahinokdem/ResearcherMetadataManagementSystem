@@ -39,8 +39,8 @@ public class MetadataValueController {
 
     @PutMapping("/{metadataValueId}")
     public MetadataValueResponse updateMetadataValue(
-            @PathVariable String metadataValueId
-            , @Valid @RequestBody MetadataValueUpdateRequest metadataValueRequest) {
+            @PathVariable String metadataValueId,
+            @Valid @RequestBody MetadataValueUpdateRequest metadataValueRequest) {
         return metadataValueService.updateMetadataValue(metadataValueId, metadataValueRequest);
     }
 

@@ -1,6 +1,7 @@
 package com.sahinokdem.researcher_metadata.service;
 
 
+import com.sahinokdem.researcher_metadata.enums.State;
 import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.model.request.LoginRequest;
 import com.sahinokdem.researcher_metadata.model.response.LoginResponse;
@@ -35,7 +36,8 @@ public class AuthenticationService {
         User user = new User(
                 registerRequest.getEmail(),
                 passwordEncoder.encode(registerRequest.getPassword()),
-                UserRole.JOP_APPLICANT
+                UserRole.JOP_APPLICANT,
+                State.SEND_FORM
         );
 
         User userEntity = userRepository.save(user);

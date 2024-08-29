@@ -6,12 +6,12 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class MetadataValueUpdateRequest {
+public class CVRequest {
     @NotEmpty
-    private final String value;
+    private final String cvAssociation;
 
     @JsonCreator
-    public MetadataValueUpdateRequest(@JsonProperty String value) {
-        this.value = value;
+    public CVRequest(@JsonProperty String cvAssociation) {
+        this.cvAssociation = cvAssociation;
     }
 }
