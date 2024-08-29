@@ -17,4 +17,11 @@ public class BusinessExceptions {
     public static BusinessException REGISTRY_TYPE_NOT_FOUND = new BusinessException(ErrorCode.internal_error, "Registry type not found");
     public static BusinessException NON_RESEARCHER_WITH_METADATA  = new BusinessException(ErrorCode.internal_error, "User is not researcher and has metadata");
     public static BusinessException METADATA_VALUE_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Metadata value not found");
+    public static BusinessException FORM_NOT_FOUND = new BusinessException(ErrorCode.not_found, "Form not found");
+    public static BusinessException CV_NOT_FOUND = new BusinessException(ErrorCode.not_found, "CV not found");
+    public static BusinessException WAITING_APPLICATION_EXIST = new BusinessException(ErrorCode.already_submitted, "Waiting application already exists");
+    public static BusinessException APPLICATION_ACCEPTED = new BusinessException(ErrorCode.forbidden, "Previous application already accepted");
+    public static BusinessException APPLICATION_PENALTY = new BusinessException(ErrorCode.forbidden, "Penalty to apply action has not finished");
+    public static BusinessException CV_REJECTED_NEW_FORM_REQUIRED = new BusinessException(ErrorCode.forbidden, "CV rejected new form required");
+    public static BusinessException CITATION_COUNT_NOT_READ = new BusinessException(ErrorCode.internal_error, "Citation count is not read from api");
 }
