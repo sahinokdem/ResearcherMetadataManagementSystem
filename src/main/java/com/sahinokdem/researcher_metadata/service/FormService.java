@@ -9,6 +9,7 @@ import com.sahinokdem.researcher_metadata.model.request.FormRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
 import com.sahinokdem.researcher_metadata.repository.FormRepository;
+import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +54,8 @@ public class FormService {
         userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
         Form form = formRepository.findById(formId).orElseThrow(
                 () -> BusinessExceptions.FORM_NOT_FOUND);
-        Form reviewedForm = formMapper.toEntity(form, request);
+        User user = form.getOwner();
+        Form reviewedForm = formMapper.toEntity(form, request, user);
         formRepository.save(reviewedForm);
         return formMapper.toResponse(reviewedForm);
     }

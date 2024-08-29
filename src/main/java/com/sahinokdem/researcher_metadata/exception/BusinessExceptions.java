@@ -22,5 +22,6 @@ public class BusinessExceptions {
     public static BusinessException WAITING_APPLICATION_EXIST = new BusinessException(ErrorCode.already_submitted, "Waiting application already exists");
     public static BusinessException APPLICATION_ACCEPTED = new BusinessException(ErrorCode.forbidden, "Previous application already accepted");
     public static BusinessException APPLICATION_PENALTY = new BusinessException(ErrorCode.forbidden, "Penalty to apply action has not finished");
+    public static BusinessException CV_REJECTED_NEW_FORM_REQUIRED = new BusinessException(ErrorCode.forbidden, "CV rejected new form required");
     public static BusinessException CITATION_COUNT_NOT_READ = new BusinessException(ErrorCode.internal_error, "Citation count is not read from api");
 }

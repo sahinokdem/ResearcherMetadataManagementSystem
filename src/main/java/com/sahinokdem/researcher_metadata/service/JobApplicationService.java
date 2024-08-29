@@ -34,9 +34,6 @@ public class JobApplicationService {
     private final CVInfoRepository cvInfoRepository;
     private final MetadataValueRepository metadataValueRepository;
     private final MetadataRegistryRepository metadataRegistryRepository;
-    @Setter
-    @Getter
-    private State currentState;
     @Autowired
     private RestTemplate restTemplate;
 
@@ -46,7 +43,6 @@ public class JobApplicationService {
         this.penaltyTimeConfig = penaltyTimeConfig;
         this.formRepository = formRepository;
         this.cvInfoRepository = cvInfoRepository;
-        this.currentState = State.Q0;
         this.metadataValueRepository = metadataValueRepository;
         this.metadataRegistryRepository = metadataRegistryRepository;
     }
@@ -70,37 +66,41 @@ public class JobApplicationService {
     }
 
     public void readyToFormSend(User user) {
-        assertState(State.Q0, BusinessExceptions.APPLICATION_ACCEPTED);
+        State userState = user.getCurrentState();
+        assertState(State.SEND_FORM, userState, BusinessExceptions.APPLICATION_ACCEPTED);
         Form previousForm = null;
         int formCount = getFormCount(user);
         if (formCount == 0) {
-            setCurrentState(State.Q1);
             return;
         } else previousForm = formRepository.findAllByOwner(user).get(formCount - 1);
-        checkApplicationResult(previousForm, penaltyTimeConfig.getLongPenaltyTime(), State.Q0);
+
+        checkApplicationResult(previousForm, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
     }
 
     public void readyToCvSend(User user) {
+        State userState = user.getCurrentState();
+        assertState(State.SEND_CV, userState, BusinessExceptions.FORM_NOT_FOUND);
         int cvCount = getCvInfoCount(user);
-        CVInfo previousCvInfo = cvInfoRepository.findByOwner(user).orElse(null);
-        if (previousCvInfo == null) assertState(State.Q1, BusinessExceptions.FORM_NOT_FOUND);
-        else if (cvCount == 1) {
-            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getShortPenaltyTime(), State.Q1);
-        } else checkApplicationResult(previousCvInfo, penaltyTimeConfig.getLongPenaltyTime(), State.Q0);
+        CVInfo previousCvInfo = cvInfoRepository.findTopByOwnerOrderByCreatedDateDesc(user);
+        if (previousCvInfo == null) {
+            return;
+        } else if (cvCount == 1) {
+            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getShortPenaltyTime(), State.SEND_CV, user);
+        } else {
+            checkApplicationResult(previousCvInfo, penaltyTimeConfig.getLongPenaltyTime(), State.SEND_FORM, user);
+        }
     }
 
-    private void checkApplicationResult(ApplicationEntity application, int penaltyTime, State previousState) {
+    private void checkApplicationResult(ApplicationEntity application, int penaltyTime, State previousState, User user) {
         switch (application.getResult()) {
             case ACCEPTED:
-                setCurrentState(State.Q1);
                 throw BusinessExceptions.APPLICATION_ACCEPTED;
             case WAITING_FOR_ACCEPTANCE:
                 throw BusinessExceptions.WAITING_APPLICATION_EXIST;
             case REJECTED:
                 LocalDate penaltyDate = LocalDate.from(application.getCreatedDate()
                         .plusDays(penaltyTime));
-                System.out.println(penaltyDate);
-                assertPenaltyTime(penaltyDate, previousState);
+                assertPenaltyTime(penaltyDate, previousState, user);
         }
     }
 
@@ -114,16 +114,16 @@ public class JobApplicationService {
         return formList.size();
     }
 
-    private void assertPenaltyTime(LocalDate penaltyDate, State state) {
+    private void assertPenaltyTime(LocalDate penaltyDate, State state, User user) {
         if (penaltyDate.isAfter(LocalDate.now())) {
             throw BusinessExceptions.APPLICATION_PENALTY;
         } else {
-            setCurrentState(state);
+            user.setCurrentState(state);
         }
     }
 
-    public void assertState(State state, BusinessException exception) {
-        if (!state.equals(currentState)) throw exception;
+    public void assertState(State state, State userState, BusinessException exception) {
+        if (!state.equals(userState)) throw exception;
     }
 
     public void setCitationCountOfResearcher(User user) {

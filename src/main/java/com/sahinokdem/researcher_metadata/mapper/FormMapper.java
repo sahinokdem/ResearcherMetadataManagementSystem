@@ -3,6 +3,7 @@ package com.sahinokdem.researcher_metadata.mapper;
 import com.sahinokdem.researcher_metadata.entity.Form;
 import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.Result;
+import com.sahinokdem.researcher_metadata.enums.State;
 import com.sahinokdem.researcher_metadata.model.request.FormRequest;
 import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
@@ -33,9 +34,11 @@ public class FormMapper {
         return form;
     }
 
-    public Form toEntity(Form form, ReviewRequest request) {
-        if (request.isAccepted()) form.setResult(Result.ACCEPTED);
-        else form.setResult(Result.REJECTED);
+    public Form toEntity(Form form, ReviewRequest request, User user) {
+        if (request.isAccepted()) {
+            form.setResult(Result.ACCEPTED);
+            user.setCurrentState(State.SEND_CV);
+        } else form.setResult(Result.REJECTED);
         form.setReason(request.getReason());
         return form;
     }

@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface DFA {
-    State value() default State.Q0;
+    State value() default State.SEND_FORM;
 }
