@@ -6,17 +6,13 @@ import com.sahinokdem.researcher_metadata.entity.User;
 import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.exception.ErrorDto;
-import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryRequest;
-import com.sahinokdem.researcher_metadata.model.request.MetadataValueCreateRequest;
-import com.sahinokdem.researcher_metadata.model.request.MetadataValueUpdateRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryCreateRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryUpdateRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import com.sahinokdem.researcher_metadata.util.TestUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
@@ -103,14 +99,14 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String editorToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString()
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + editorToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<MetadataRegistryResponse> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, MetadataRegistryResponse.class);
         // THEN
@@ -132,14 +128,14 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String editorToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString()
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + editorToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<MetadataRegistryResponse> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, MetadataRegistryResponse.class);
         // THEN
@@ -161,14 +157,14 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String editorToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString()
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + editorToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<MetadataRegistryResponse> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, MetadataRegistryResponse.class);
         // THEN
@@ -190,14 +186,14 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String editorToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString()
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + editorToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<MetadataRegistryResponse> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, MetadataRegistryResponse.class);
         // THEN
@@ -219,14 +215,14 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String adminToken = tokenService.getTokenFor(user);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString()
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + adminToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<ErrorDto> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, ErrorDto.class);
 
@@ -255,20 +251,17 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
         // GIVEN
         String registryId = "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a";
         String updatedRegistryName = "updated_registry";
-        MetadataRegistryType updatedRegistryType = MetadataRegistryType.POSITIVE_INTEGER;
         User user = userRepository.findByEmail("editor@test.com").orElseThrow(
                 () -> new RuntimeException("Invalid Test Data Provided")
         );
         String editorToken = tokenService.getTokenFor(user);
-
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
-                updatedRegistryName,
-                updatedRegistryType.toString()
+        MetadataRegistryUpdateRequest request = new MetadataRegistryUpdateRequest(
+                updatedRegistryName
         );
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + editorToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<MetadataRegistryResponse> response = restTemplate.exchange(
                 "/metadata-registry/{id}", HttpMethod.PUT, requestEntity, MetadataRegistryResponse.class, registryId);
         // THEN
@@ -277,25 +270,18 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
                 () -> assertEquals(HttpStatus.OK, response.getStatusCode(), "Status code should be 200 OK"),
                 () -> assertNotNull(response.getBody(), "Registry response should not be null"),
                 () -> assertEquals(registryId, response.getBody().getId(), "Updated registry ID should match the requested ID"),
-                () -> assertEquals(updatedRegistryName, response.getBody().getName(), "Updated registry name should match the request"),
-                () -> assertEquals(updatedRegistryType, response.getBody().getType(), "Updated registry type should match the request")
+                () -> assertEquals(updatedRegistryName, response.getBody().getName(), "Updated registry name should match the request")
         );
     }
 
     @Test
     public void given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden() {
         given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "STRING");
-        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(adminToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "POSITIVE_INTEGER");
+                "updated_registry");
         given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "STRING");
-        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(researcherToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "POSITIVE_INTEGER");
+                "updated_registry");
         given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "STRING");
-        given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(hrSpecialistToken, "c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4a",
-                "updated_registry", "POSITIVE_INTEGER");
+                "updated_registry");
     }
 
     @Test
@@ -355,13 +341,13 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
     private void given_NotAuthorizedUser_when_AddRegistry_then_Forbidden(String userToken, String registryName,
                                                                         MetadataRegistryType registryType) {
         // GIVEN
-        MetadataRegistryRequest request = new MetadataRegistryRequest(
+        MetadataRegistryCreateRequest request = new MetadataRegistryCreateRequest(
                 registryName,
                 registryType.toString());
         // WHEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryCreateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<ErrorDto> response = restTemplate.exchange(
                 "/metadata-registry/add", HttpMethod.POST, requestEntity, ErrorDto.class);
 
@@ -370,13 +356,13 @@ public class MetadataRegistryControllerTest extends AbstractControllerTest {
     }
 
     private void given_NotAuthorizedUser_when_UpdateExistingRegistry_then_Forbidden(String userToken, String registryId,
-                                                                                   String updatedRegistryName, String updatedRegistryType) {
+                                                                                   String updatedRegistryName) {
         // GIVEN
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + userToken);
-        MetadataRegistryRequest request = new MetadataRegistryRequest(updatedRegistryName, updatedRegistryType);
+        MetadataRegistryUpdateRequest request = new MetadataRegistryUpdateRequest(updatedRegistryName);
         // WHEN
-        HttpEntity<MetadataRegistryRequest> requestEntity = new HttpEntity<>(request, headers);
+        HttpEntity<MetadataRegistryUpdateRequest> requestEntity = new HttpEntity<>(request, headers);
         ResponseEntity<ErrorDto> response = restTemplate.exchange(
                 "/metadata-registry/{id}", HttpMethod.PUT, requestEntity, ErrorDto.class, registryId);
         // THEN

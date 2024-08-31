@@ -3,7 +3,8 @@ package com.sahinokdem.researcher_metadata.mapper;
 import com.sahinokdem.researcher_metadata.entity.MetadataRegistry;
 import com.sahinokdem.researcher_metadata.enums.MetadataRegistryType;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
-import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryCreateRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryUpdateRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import lombok.AllArgsConstructor;
@@ -26,7 +27,7 @@ public class MetadataRegistryMapper {
         );
     }
 
-    public MetadataRegistry toEntity(MetadataRegistryRequest request) {
+    public MetadataRegistry toEntity(MetadataRegistryCreateRequest request) {
         assertRegistryNameUnique(request.getName());
         return new MetadataRegistry(
                 request.getName(),
@@ -35,10 +36,9 @@ public class MetadataRegistryMapper {
         );
     }
 
-    public MetadataRegistry toEntity(MetadataRegistryRequest request, MetadataRegistry metadataRegistry) {
+    public MetadataRegistry toEntity(MetadataRegistryUpdateRequest request, MetadataRegistry metadataRegistry) {
         if (!request.getName().equals(metadataRegistry.getName())) assertRegistryNameUnique(request.getName());
         metadataRegistry.setName(request.getName());
-        metadataRegistry.setType(toType(request.getType()));
         return metadataRegistry;
     }
 
