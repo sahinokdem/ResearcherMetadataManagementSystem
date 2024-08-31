@@ -3,17 +3,10 @@ package com.sahinokdem.researcher_metadata.service;
 import com.sahinokdem.researcher_metadata.annotation.DFA;
 import com.sahinokdem.researcher_metadata.config.PenaltyTimeConfig;
 import com.sahinokdem.researcher_metadata.entity.*;
-import com.sahinokdem.researcher_metadata.enums.Result;
 import com.sahinokdem.researcher_metadata.enums.State;
-import com.sahinokdem.researcher_metadata.exception.BusinessException;
+import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
-import com.sahinokdem.researcher_metadata.repository.CVInfoRepository;
-import com.sahinokdem.researcher_metadata.repository.FormRepository;
-import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
-import com.sahinokdem.researcher_metadata.repository.MetadataValueRepository;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.sahinokdem.researcher_metadata.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +14,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @DFA
 @Service
@@ -35,17 +32,21 @@ public class JobApplicationService {
     private final CVInfoRepository cvInfoRepository;
     private final MetadataValueRepository metadataValueRepository;
     private final MetadataRegistryRepository metadataRegistryRepository;
+    private final UserRepository userRepository;
     @Autowired
     private RestTemplate restTemplate;
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public JobApplicationService(PenaltyTimeConfig penaltyTimeConfig,
              FormRepository formRepository, CVInfoRepository cvInfoRepository,
-             MetadataValueRepository metadataValueRepository, MetadataRegistryRepository metadataRegistryRepository) {
+             MetadataValueRepository metadataValueRepository,
+             MetadataRegistryRepository metadataRegistryRepository, UserRepository userRepository) {
         this.penaltyTimeConfig = penaltyTimeConfig;
         this.formRepository = formRepository;
         this.cvInfoRepository = cvInfoRepository;
         this.metadataValueRepository = metadataValueRepository;
         this.metadataRegistryRepository = metadataRegistryRepository;
+        this.userRepository = userRepository;
     }
 
     public String getCitationCountFromFastAPI(String researcherApiId) {
@@ -131,12 +132,34 @@ public class JobApplicationService {
 
     public void setCitationCountOfResearcher(User user) {
         Form previousForm = formRepository.findTopByOwnerOrderByCreatedDateDesc(user);
+        if (previousForm == null) {
+            return;
+        }
         if (!previousForm.getExternalApiId().isEmpty()) {
             String citation_count = getCitationCountFromFastAPI(previousForm.getExternalApiId());
             MetadataRegistry metadataRegistry = metadataRegistryRepository.findById("e8f2a71d-4b9c-4a7e-8c3f-5d1a8f9b2c6e")
                     .orElseThrow(() -> BusinessExceptions.REGISTRY_TYPE_NOT_FOUND);
-            MetadataValue metadataValue = new MetadataValue(user, metadataRegistry, citation_count);
+            MetadataValue metadataValue = metadataValueRepository.findByOwnerAndMetadataRegistry(user, metadataRegistry).orElse(null);
+            if (metadataValue != null) {
+                metadataValue.setValue(citation_count);
+            } else {
+                metadataValue = new MetadataValue(user, metadataRegistry, citation_count);
+            }
             metadataValueRepository.save(metadataValue);
         }
+    }
+
+    @PostConstruct
+    public void scheduleCitationCountUpdates() {
+        scheduler.scheduleAtFixedRate(() -> {
+            for (User user : userRepository.findAllByUserRole(UserRole.RESEARCHER)) {
+                setCitationCountOfResearcher(user);
+            }
+        }, 0, 1, TimeUnit.MINUTES);
+    }
+
+    @PreDestroy
+    public void shutdownScheduler() {
+        scheduler.shutdown();
     }
 }

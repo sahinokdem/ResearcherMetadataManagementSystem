@@ -9,6 +9,8 @@ import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryUpdateRe
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,10 +53,10 @@ public class MetadataRegistryService {
         return metadataRegistryMapper.toResponse(metadataRegistry);
     }
 
-    public List<MetadataRegistryResponse> getAllMetadataRegistries() {
+    public List<MetadataRegistryResponse> getAllMetadataRegistries(Pageable pageable) {
         userRoleService.assertCurrentUserRole(UserRole.EDITOR);
-        List<MetadataRegistry> metadataRegistries = metadataRegistryRepository.findAll();
-        return metadataRegistries.stream()
+        Page<MetadataRegistry> metadataRegistries = metadataRegistryRepository.findAll(pageable);
+        return metadataRegistries.getContent().stream()
                 .map(metadataRegistryMapper::toResponse)
                 .collect(Collectors.toList());
     }

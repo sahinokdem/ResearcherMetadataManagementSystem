@@ -12,6 +12,8 @@ import com.sahinokdem.researcher_metadata.model.response.CVResponse;
 import com.sahinokdem.researcher_metadata.repository.CVInfoRepository;
 import com.sahinokdem.researcher_metadata.repository.FileInfoRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,10 +30,10 @@ public class CVService {
     private final FileInfoRepository fileInfoRepository;
     private final CVInfoRepository cvInfoRepository;
 
-    public List<CVResponse> getAllCVInfos() {
+    public List<CVResponse> getAllCVInfos(Pageable pageable) {
         userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
-        List<CVInfo> cvInfos = cvInfoRepository.findAll();
-        return cvInfos.stream()
+        Page<CVInfo> cvInfos = cvInfoRepository.findAll(pageable);
+        return cvInfos.getContent().stream()
                 .map(cvMapper::toResponse)
                 .collect(Collectors.toList());
     }

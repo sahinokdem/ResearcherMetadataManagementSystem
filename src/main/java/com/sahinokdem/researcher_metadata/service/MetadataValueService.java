@@ -12,9 +12,12 @@ import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
 import com.sahinokdem.researcher_metadata.repository.MetadataRegistryRepository;
 import com.sahinokdem.researcher_metadata.repository.MetadataValueRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Pageable;
 
 @Service
 @AllArgsConstructor
@@ -28,10 +31,10 @@ public class MetadataValueService {
     private final MetadataRegistryRepository metadataRegistryRepository;
 
 
-    public List<MetadataValueResponse> getAllMetadataValues() {
-        List<MetadataValue> metadataValues = entityAccessService.getAllEntities(
-                metadataValueRepository, UserRole.RESEARCHER, UserRole.EDITOR);
-        return metadataValues.stream()
+    public List<MetadataValueResponse> getAllMetadataValues(Pageable pageable) {
+        Page<MetadataValue> metadataValues = entityAccessService.getAllEntities(
+                metadataValueRepository, UserRole.RESEARCHER, UserRole.EDITOR, pageable);
+        return metadataValues.getContent().stream()
                 .map(metadataValueMapper::toResponse)
                 .collect(Collectors.toList());
     }

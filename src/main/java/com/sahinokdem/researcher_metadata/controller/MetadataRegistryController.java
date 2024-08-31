@@ -5,6 +5,8 @@ import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryUpdateRe
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.service.MetadataRegistryService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,7 +43,7 @@ public class MetadataRegistryController {
     }
 
     @GetMapping
-    public List<MetadataRegistryResponse> getAllMetadataRegistries() {
-        return metadataRegistryService.getAllMetadataRegistries();
+    public List<MetadataRegistryResponse> getAllMetadataRegistries(@ParameterObject Pageable pageable) {
+        return metadataRegistryService.getAllMetadataRegistries(pageable);
     }
 }

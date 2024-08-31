@@ -5,6 +5,8 @@ import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.CVResponse;
 import com.sahinokdem.researcher_metadata.service.CVService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,8 @@ public class CVController {
     private final CVService cvService;
 
     @GetMapping
-    public List<CVResponse> getAllCVInfos() {
-        return cvService.getAllCVInfos();
+    public List<CVResponse> getAllCVInfos(@ParameterObject Pageable pageable) {
+        return cvService.getAllCVInfos(pageable);
     }
 
     @GetMapping("{cvId}")

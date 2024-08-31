@@ -12,4 +12,5 @@ public interface MetadataValueRepository extends EntityWithOwnerRepository<Metad
 
     List<MetadataValue> findAllByOwnerAndMetadataRegistry(User owner, MetadataRegistry metadataRegistry);
     List<MetadataValue> findAllByMetadataRegistry(MetadataRegistry metadataRegistry);
+    Optional<MetadataValue> findByOwnerAndMetadataRegistry(User owner, MetadataRegistry metadataRegistry);
 }

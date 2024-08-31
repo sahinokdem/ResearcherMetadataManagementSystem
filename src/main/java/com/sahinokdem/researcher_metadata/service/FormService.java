@@ -11,6 +11,8 @@ import com.sahinokdem.researcher_metadata.model.response.FormResponse;
 import com.sahinokdem.researcher_metadata.repository.FormRepository;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,10 +29,10 @@ public class FormService {
     private final EntityAccessService entityAccessService;
     private final FormRepository formRepository;
 
-    public List<FormResponse> getAllForms() {
+    public List<FormResponse> getAllForms(Pageable pageable) {
         userRoleService.assertCurrentUserRole(UserRole.HR_SPECIALIST);
-        List<Form> forms = formRepository.findAll();
-        return forms.stream()
+        Page<Form> forms = formRepository.findAll(pageable);
+        return forms.getContent().stream()
                 .map(formMapper::toResponse)
                 .collect(Collectors.toList());
     }
