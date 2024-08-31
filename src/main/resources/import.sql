@@ -44,4 +44,4 @@ INSERT INTO metadata_value (id, created_date, modified_date, value, metadata_reg
 VALUES ('c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4q', now(), now(), 'COMPUTER_SCIENCE', 'c9a2f3d2-7b8b-4b32-9101-dc223b6c5b4g', 'c9a2f3d2-7b8b-4b32-9101-dc223b6c5b8b');
 
 INSERT INTO files (id, created_date, modified_date, location, name, size)
-VALUES ('c9a2f3d2-7b8b-4b32-9901-ec223b6c5b4m', now(), now(), 'not_exist', 'not_exist_file', 0)
+VALUES ('c9a2f3d2-7b8b-4b32-9901-ec223b6c5b4m', now(), now(), 'not_exist', 'not_exist_file', 0);
