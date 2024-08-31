@@ -17,6 +17,10 @@ public class FormMapper {
     public FormResponse toResponse(Form form) {
         return new FormResponse(
                 form.getId(),
+                form.getNameAndSurname(),
+                form.getEmail(),
+                form.getDateOfBirth(),
+                form.getExternalApiId(),
                 form.getResult(),
                 form.getReason()
         );
