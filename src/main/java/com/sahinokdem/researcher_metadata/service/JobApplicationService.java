@@ -22,6 +22,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -104,32 +105,28 @@ public class JobApplicationService {
             case WAITING_FOR_ACCEPTANCE:
                 throw BusinessExceptions.WAITING_APPLICATION_EXIST;
             case REJECTED:
-                LocalDate penaltyDate = LocalDate.from(application.getCreatedDate()
-                        .plusDays(penaltyTime));
+//                LocalDate penaltyDate = LocalDate.from(application.getCreatedDate()
+//                        .plusDays(penaltyTime));
+                LocalDateTime penaltyDate = LocalDateTime.from(application.getCreatedDate()
+                        .plusSeconds(penaltyTime));
                 assertPenaltyTime(penaltyDate, previousState, user);
         }
     }
 
-    private int getCvInfoCount(User owner) {
-        List<CVInfo> cvInfoList = cvInfoRepository.findAllByOwner(owner);
-        return cvInfoList.size();
-    }
+//    private void assertPenaltyTime(LocalDate penaltyDate, State state, User user) {
+//        if (penaltyDate.isAfter(LocalDate.now())) {
+//            throw BusinessExceptions.APPLICATION_PENALTY;
+//        } else {
+//            user.setCurrentState(state);
+//        }
+//    }
 
-    private int getFormCount(User owner) {
-        List<Form> formList = formRepository.findAllByOwner(owner);
-        return formList.size();
-    }
-
-    private void assertPenaltyTime(LocalDate penaltyDate, State state, User user) {
-        if (penaltyDate.isAfter(LocalDate.now())) {
+    private void assertPenaltyTime(LocalDateTime penaltyDate, State state, User user) {
+        if (penaltyDate.isAfter(LocalDateTime.now())) {
             throw BusinessExceptions.APPLICATION_PENALTY;
         } else {
             user.setCurrentState(state);
         }
-    }
-
-    public void assertState(State state, State userState, BusinessException exception) {
-        if (!state.equals(userState)) throw exception;
     }
 
     public void setCitationCountOfResearcher(User user) {
