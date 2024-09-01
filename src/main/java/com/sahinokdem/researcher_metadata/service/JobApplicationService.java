@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -56,14 +57,10 @@ public class JobApplicationService {
             if (response.getStatusCode() == HttpStatus.OK) {
                 return response.getBody().get("citation_count").toString();
             } else {
-                throw BusinessExceptions.CITATION_COUNT_NOT_READ;
-            }
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return null;
-            } else {
-                throw BusinessExceptions.CITATION_COUNT_NOT_READ;
             }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            return null;
         }
     }
 
