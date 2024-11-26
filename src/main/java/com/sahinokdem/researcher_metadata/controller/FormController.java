@@ -5,6 +5,8 @@ import com.sahinokdem.researcher_metadata.model.request.ReviewRequest;
 import com.sahinokdem.researcher_metadata.model.response.FormResponse;
 import com.sahinokdem.researcher_metadata.service.FormService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
@@ -17,8 +19,8 @@ public class FormController {
     private final FormService formService;
 
     @GetMapping
-    public List<FormResponse> getAllForms() {
-        return formService.getAllForms();
+    public List<FormResponse> getAllForms(@ParameterObject Pageable pageable) {
+        return formService.getAllForms(pageable);
     }
 
     @GetMapping("{formId}")

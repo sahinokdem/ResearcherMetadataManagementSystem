@@ -1,9 +1,12 @@
 package com.sahinokdem.researcher_metadata.controller;
 
-import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryCreateRequest;
+import com.sahinokdem.researcher_metadata.model.request.MetadataRegistryUpdateRequest;
 import com.sahinokdem.researcher_metadata.model.response.MetadataRegistryResponse;
 import com.sahinokdem.researcher_metadata.service.MetadataRegistryService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -18,15 +21,15 @@ public class MetadataRegistryController {
 
     @PostMapping("/add")
     public MetadataRegistryResponse addMetadataRegistry(
-            @Valid @RequestBody MetadataRegistryRequest metadataRegistryRequest) {
-        return metadataRegistryService.addMetadataRegistry(metadataRegistryRequest);
+            @Valid @RequestBody MetadataRegistryCreateRequest metadataRegistryCreateRequest) {
+        return metadataRegistryService.addMetadataRegistry(metadataRegistryCreateRequest);
     }
 
     @PutMapping("/{metadataRegistryId}")
     public MetadataRegistryResponse updateMetadataRegistry(
             @PathVariable String metadataRegistryId,
-            @Valid @RequestBody MetadataRegistryRequest metadataRegistryRequest) {
-        return metadataRegistryService.updateMetadataRegistry(metadataRegistryId, metadataRegistryRequest);
+            @Valid @RequestBody MetadataRegistryUpdateRequest metadataRegistryUpdateRequest) {
+        return metadataRegistryService.updateMetadataRegistry(metadataRegistryId, metadataRegistryUpdateRequest);
     }
 
     @DeleteMapping("/{metadataRegistryId}")
@@ -40,7 +43,7 @@ public class MetadataRegistryController {
     }
 
     @GetMapping
-    public List<MetadataRegistryResponse> getAllMetadataRegistries() {
-        return metadataRegistryService.getAllMetadataRegistries();
+    public List<MetadataRegistryResponse> getAllMetadataRegistries(@ParameterObject Pageable pageable) {
+        return metadataRegistryService.getAllMetadataRegistries(pageable);
     }
 }

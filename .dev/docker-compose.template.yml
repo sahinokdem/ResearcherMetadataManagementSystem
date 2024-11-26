@@ -1,0 +1,22 @@
+version: '3'
+services:
+  app:
+    image: ${CI_REGISTRY_IMAGE}:${CI_IMAGE_TAG}
+    container_name: researcher-metadata-management-system
+    ports:
+      - "8085:8085"
+    environment:
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - SWAGGER_URL=${SWAGGER_URL}
+      - STORAGE_PATH=/app/cdn
+      - SHORT_DAYS=${SHORT_DAYS}
+      - LONG_DAYS=${LONG_DAYS}
+    network_mode: "host"
+    volumes:
+      - ${STORAGE_PATH}:/app/cdn
+
+#volumes:
+#  app-uploads:

@@ -7,7 +7,10 @@ import com.sahinokdem.researcher_metadata.mapper.UserMapper;
 import com.sahinokdem.researcher_metadata.model.response.UserResponse;
 import com.sahinokdem.researcher_metadata.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,10 +38,10 @@ public class UserService {
         return userMapper.toResponse(currentUser);
     }
 
-    public List<UserResponse> getUsers() {
+    public List<UserResponse> getUsers(Pageable pageable) {
         userRoleService.assertCurrentUserRole(UserRole.ADMIN);
-        List<User> users = userRepository.findAll();
-        return users.stream()
+        Page<User> users = userRepository.findAll(pageable);
+        return users.getContent().stream()
                 .map(userMapper::toResponse)
                 .collect(Collectors.toList());
     }

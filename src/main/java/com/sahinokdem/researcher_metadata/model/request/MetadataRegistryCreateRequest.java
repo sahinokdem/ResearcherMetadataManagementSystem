@@ -4,7 +4,7 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class MetadataRegistryRequest {
+public class MetadataRegistryCreateRequest {
     @NotEmpty
     private final String name;
     @NotEmpty

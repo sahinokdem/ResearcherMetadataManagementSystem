@@ -6,8 +6,11 @@ import com.sahinokdem.researcher_metadata.enums.UserRole;
 import com.sahinokdem.researcher_metadata.exception.BusinessException;
 import com.sahinokdem.researcher_metadata.exception.BusinessExceptions;
 import com.sahinokdem.researcher_metadata.repository.EntityWithOwnerRepository;
+
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 @Service
@@ -32,13 +35,13 @@ public class EntityAccessService {
         }
     }
 
-    public <T extends BaseEntity> List<T> getAllEntities(EntityWithOwnerRepository<T> entityRepository,
-                 UserRole ownerUserRole, UserRole accessUserRole) {
+    public <T extends BaseEntity> Page<T> getAllEntities(EntityWithOwnerRepository<T> entityRepository,
+                                                         UserRole ownerUserRole, UserRole accessUserRole, Pageable pageable) {
         if (userRoleService.checkCurrentUserRole(ownerUserRole)) {
             User owner = authenticationService.getAuthenticatedUser();
-            return entityRepository.findAllByOwner(owner);
+            return entityRepository.findAllByOwner(owner, pageable);
         } else if (userRoleService.checkCurrentUserRole(accessUserRole)) {
-            return entityRepository.findAll();
+            return entityRepository.findAll(pageable);
         } else {
             throw BusinessExceptions.AUTHORIZATION_MISSING;
         }

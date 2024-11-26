@@ -5,6 +5,8 @@ import com.sahinokdem.researcher_metadata.model.request.MetadataValueUpdateReque
 import com.sahinokdem.researcher_metadata.model.response.MetadataValueResponse;
 import com.sahinokdem.researcher_metadata.service.MetadataValueService;
 import lombok.AllArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
@@ -17,8 +19,8 @@ public class MetadataValueController {
     private MetadataValueService metadataValueService;
 
     @GetMapping
-    public List<MetadataValueResponse> getAllMetadataValues() {
-        return metadataValueService.getAllMetadataValues();
+    public List<MetadataValueResponse> getAllMetadataValues(@ParameterObject Pageable pageable) {
+        return metadataValueService.getAllMetadataValues(pageable);
     }
 
     @GetMapping("/type")

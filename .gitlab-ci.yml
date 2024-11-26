@@ -1,0 +1,63 @@
+variables:
+  CI_IMAGE_TAG: ${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  image: docker:20.10
+  stage: build
+  services:
+    - docker:20.10-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - apk add --no-cache openssh-client gettext
+  script:
+    - echo "Building the application..."
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker build --network host --tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG .
+    - docker tag $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_IMAGE_TAG
+
+test_job:
+  image: docker:20.10
+  stage: test
+  services:
+    - docker:20.10-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: '/certs'
+    DOCKER_DRIVER: overlay2
+  before_script:
+    - apk add --no-cache maven
+  script:
+    - mvn clean install
+
+
+deploy_job:
+  stage: deploy
+  before_script:
+    - apt update
+    - apt install --no-install-recommends -y openssh-client gettext
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $REMOTE_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - echo "Deploying the application..."
+    - envsubst < .dev/docker-compose.template.yml > docker-compose.yml
+    - scp docker-compose.yml ${REMOTE_USER}@${REMOTE_HOST}:~
+    - ssh ${REMOTE_USER}@${REMOTE_HOST} 'sudo docker-compose up -d'
+  environment:
+    name: production
+    url: http://${REMOTE_HOST}:8085
